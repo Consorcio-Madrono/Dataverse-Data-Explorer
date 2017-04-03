@@ -2,7 +2,7 @@
 angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $http, $modal, $location, searchParams,filterService, variableQuery,variableClick,sharedVariableStore){	
 	$scope.showPaging =true;
 	$scope.chartTemplatePath = 'templates/chart.html';
-	var detailsURL = $location.search();
+	var detailsURL = $location.search();//get the url params
 	$scope.detailsURL = detailsURL;
 	$scope.currentTablePage = [];//stored with each survey file
 	$scope.tablePageSize = 10;
@@ -19,6 +19,8 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$scope.sortReverse=true; 
 	$scope.has_no_selection=true;
 	$scope.sortReverse=true; 
+	//
+	$scope.sectionModel = {}
 	//
 	$scope.citation="";
 	//
@@ -215,21 +217,24 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 		}
 	}
 $scope.viewVariable = function (vl) {
-	if(vl){
-		$scope.selectedVariable = vl.fullData;
-	}else{
-		$scope.selectedVariable=null	
+	vl.selected=!vl.selected;
+	var id=vl.vid;
+	//---
+	var temp_array=$cookies.variableCompare.split(",");
+	
+	if($cookies.variableCompare==""){
+		//prevent blanks
+		temp_array=[] 
 	}
-	var modalInstance = $modal.open({
-		templateUrl: $scope.chartTemplatePath,
-		controller: ModalInstanceCtrl,
-		size: 'lg',
-		resolve: {
-			items: function () {
-			  return $scope.selectedVariable;
-			}
-		}
-	});
+	if( temp_array.indexOf(id)>-1){
+		//remove the item from the array
+		temp_array.splice( temp_array.indexOf(id),1)
+	}else{
+		temp_array.unshift(id);
+	}
+	//reset cookie to a string
+	$cookies.variableCompare = temp_array.join(",")
+	$scope.selectedVariable=temp_array;//update the chart watching variable
 };
 $scope.my_option = 0;
 $scope.downloadData = function (my_option) {
@@ -246,7 +251,6 @@ $scope.downloadData = function (my_option) {
 		 url+="?format=RData"
 		break;
 	case 4:
-	
 		//need to prep the url a bit - should look like //https://sand9.scholarsportal.info/api/meta/datafile/15
 		var base_url_api=base_url.substring(0,base_url.indexOf("/api/"));
 		url=base_url_api+"/api/meta/datafile/"+file_id+"?"
@@ -278,9 +282,7 @@ $scope.downloadMyVariables = function (vl) {
 	var temp_array=$cookies.variableCompare.split(",")
 	window.location.assign(base_url+file_id+"?key="+detailsURL.key+"&variables="+temp_array.join(","));
 };
-$scope.chartMyVariables = function (vl) {
-	$scope.viewVariable()
-};
+
 $scope.isChecked=function(vid){
 		var temp_array=$cookies.variableCompare.split(",")
 		return temp_array.indexOf(vid) !== -1
@@ -295,6 +297,8 @@ $scope.toggleButtons=function(vid){
 }
 	
  var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
+console.log($modalInstance)
+
   $scope.selectedVariable = items
 
   $scope.ok = function () {
@@ -316,8 +320,12 @@ var traverse = function(o,func) {
 		}
 	}
 }     
-	
-	  detailsURL.uri=getParameterByName("uri")
+	///////////////////////
+	/*
+	Entry point of application
+	*/
+	//////////////////////
+	detailsURL.uri=getParameterByName("uri")
 	detailsURL.key=getParameterByName("key")
 	
 	$http({
@@ -333,6 +341,9 @@ var traverse = function(o,func) {
 
 	var file_id=detailsURL.uri.match("datafile\/(.*)\/metadata")[1];
 	var base_url=detailsURL.uri.substr(0,detailsURL.uri.indexOf("datafile/")+9);
+	//create a url for loading the data
+	var tab_data_url=base_url.substring(0,base_url.indexOf("/api/"))+"/ReadFile?url="+base_url+file_id+"&key="+detailsURL.key+"&variables=";
+	sharedVariableStore.setVariableStoreURL(tab_data_url);
 	//
 	$http({
 		url: base_url+file_id+"?format=prep&key="+detailsURL.key, 
@@ -341,8 +352,10 @@ var traverse = function(o,func) {
 	}).success(function(data, status, headers, config){	
 		$scope._variableData=data;
 		connectVariablesAndData();
+	}).error(function(){
+		$scope._variableData={};
+		connectVariablesAndData();
 	});
-	
 	var loadcount=0
 		function connectVariablesAndData(){
 			//wait till both variables and data are loaded
@@ -359,48 +372,57 @@ $scope.show = {};
 	$scope.toggle = function(index) {
 		$scope.show[index] = !$scope.show[index];
 	};
-}).controller('CheckboxCtrl', function ($scope, $cookies) {
-	 $scope.deselectAll = function(){
-		//loop through page unchecking boxes
-		 var temp_array=$cookies.variableCompare.split(",");
-		 for(var i = 0; i< temp_array.length; i++){
-			 $("#"+temp_array[i]+"_checkbox").checked = false;
-		 }
-		 
-		 $cookies.variableCompare=""; 			 
-	 }
-	 $scope.selectAll = function(){	
-		$('.checkbox').each(function(){ //iterate all listed checkbox items
-			if(!$(this).is(":checked")){
-				$(this).prop('checked', true);
-				$scope.updateCompareList($(this).attr("id").substring(0,$(this).attr("id").indexOf("_checkbox")))
-			}
-		});		
-	 }
-	//keep track of the variables the user has selected
-	//remember that cookies can not be arrays so we'll need to split them
-$scope.updateCompareList = function(id){
-	var temp_array=$cookies.variableCompare.split(",");
-	
-	if($cookies.variableCompare==""){
-		//prevent blanks
-		temp_array=[] 
-	}
-	if( temp_array.indexOf(id)>-1){
-		//remove the item from the array
-		temp_array.splice( temp_array.indexOf(id),1)
-	}else{
-		temp_array.push(id);
-	}
-	//reset cookie to a string
-	$cookies.variableCompare = temp_array.join(",")
-	
-	$scope.toggleButtons();
-	}
 })
 .controller('PagerCtrl', function($scope){
 	$scope.showPaging =true;
-})
+}).directive('tabs', function() {
+    return {
+      restrict: 'E',
+      transclude: true,
+      scope: {},
+      controller: [ "$scope", function($scope) {
+        var panes = $scope.panes = [];
+ 
+        $scope.select = function(pane) {
+          angular.forEach(panes, function(pane) {
+            pane.selected = false;
+          });
+          pane.selected = true;
+        }
+ 
+        this.addPane = function(pane) {
+          if (panes.length == 0) $scope.select(pane);
+          panes.push(pane);
+        }
+      }],
+      template:
+        '<div class="tabbable">' +
+          '<ul class="nav nav-tabs">' +
+            '<li ng-repeat="pane in panes" ng-class="{active:pane.selected}">'+
+              '<a href="" ng-click="select(pane)">{{pane.title}}</a>' +
+            '</li>' +
+          '</ul>' +
+          '<div class="tab-content" ng-transclude></div>' +
+        '</div>',
+      replace: true
+    };
+  }).
+  directive('pane', function() {
+    return {
+      require: '^tabs',
+      restrict: 'E',
+      transclude: true,
+      scope: { title: '@' },
+      link: function(scope, element, attrs, tabsCtrl) {
+        tabsCtrl.addPane(scope);
+      },
+      template:
+        '<div class="tab-pane" ng-class="{active: selected}" ng-transclude>' +
+        '</div>',
+      replace: true
+    };
+  })
+/////////////////////
 
 
 				

@@ -6,7 +6,6 @@
 		<input class="search_field" ng-model="search_text" ng-change="updateFilter(search_text)" ng-focus="selectFilter()"></div></label>
 		<span class="formlabel btn-padding"><span class="badge ng-binding">{{filtered.length}}</span> {{lang.detailsPage.results}}</span>
 		<a class="btn btn-sm btn-primary btn-padding" href="javascript:void(0)" ng-click="downloadMyVariables()" ng-disabled="has_no_selection">{{lang.detailsPage.download_my_variables}}</a>
-		<a class="btn btn-sm btn-primary btn-padding" href="javascript:void(0)" ng-click="chartMyVariables()" ng-disabled="has_no_selection">{{lang.detailsPage.chart_my_variables}}</a>
 		<select id="download" ng-model="my_option" class="form-control btn-padding" ng-change="downloadData(my_option);reset()">
 			<option value="0" selected="selected" label="{{lang.detailsPage.download_all}}">{{lang.detailsPage.download_all}}</option>
 			<option value="1" label="{{lang.detailsPage.orig_file_format}}">{{lang.detailsPage.orig_file_format}}</option>
@@ -14,13 +13,13 @@
 			<option value="3" label="{{lang.detailsPage.rdata_format}}">{{lang.detailsPage.rdata_format}}</option>
 			<option value="4" label="{{lang.detailsPage.variable_metadata}}">{{lang.detailsPage.variable_metadata}}</option>
 		</select>
-		<a class="btn btn-sm btn-primary btn-padding pull-right" href="javascript:void(0)" ng-click="goToTwoRavens()" >{{lang.detailsPage.advanced_analysis}} <span class="glyphicon glyphicon-new-window"></span></a>
+		<!--<a class="btn btn-sm btn-primary btn-padding pull-right" href="javascript:void(0)" ng-click="goToTwoRavens()" >{{lang.detailsPage.advanced_analysis}} <span class="glyphicon glyphicon-new-window"></span></a>-->
 	
 		</div>
 		<table class="table table-bordered table-hover table-condensed">
 			<thead>
 				<tr>
-					<th class='narrow_column'>{{lang.detailsPage.compare}}<br/><a href='javascript:void(0)' ng-click="selectAll()" ng-controller="CheckboxCtrl">{{lang.detailsPage.select_all}}</a>&nbsp;&nbsp;<a href='javascript:void(0)' ng-click="deselectAll()" ng-controller="CheckboxCtrl"> {{lang.detailsPage.deselect_all}}</a></th>
+					
 					<th class='narrower_column'>
 					{{lang.detailsPage.varID}}
 					<span ng-show="sortCol == 'id' && sortReverse" class="glyphicon glyphicon-arrow-up"></span>
@@ -33,29 +32,14 @@
 					<span ng-show="sortCol == 'name'&& !sortReverse" class="glyphicon glyphicon-arrow-down"></span>
 					</th>
 					<th>{{lang.detailsPage.label}}<span ng-show="sortCol == 'label' && sortReverse" class="glyphicon glyphicon-arrow-up"></span><span ng-show="sortCol == 'label' && !sortReverse" class="glyphicon glyphicon-arrow-down"></span></th>
-					
-					<th>{{lang.detailsPage.cats}}</th>
-				
-					<th>{{lang.detailsPage.validCases}}</th>
-				
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="vl in filtered = (_variables | filter:filterResults) | startFrom:currentTablePage[_file_num]*tablePageSize | limitTo:tablePageSize " ng-controller="CheckboxCtrl">
-				<td align="center"><span >
-							<input type="checkbox" class="checkbox" id="{{vl.vid}}_checkbox" ng-checked="isChecked(vl.vid)" value="" ng-click="updateCompareList(vl.vid)">
-					</span></td>
+				<tr ng-repeat="vl in filtered = (_variables | filter:filterResults) | startFrom:currentTablePage[_file_num]*tablePageSize | limitTo:tablePageSize "  ng-click="viewVariable(vl)" ng-class="{active:(vl.selected)}">
 					<td>{{vl.id}}</td>
 					<td>{{vl.name}}</td>
-					<td><a href="javascript:void(0)" ng-click="viewVariable(vl)">{{vl.label}}</a></td>
-					<td>
-						<span ng-show="vl.chartable">
-							{{vl.fullData.catgry.length}}
-					 	</span>
-					</td>
-					
-					<td>{{vl.valid}}</td>
-					
+					<td>{{vl.label}}</td>
+
 				</tr>
 			</tbody>
 		</table>
