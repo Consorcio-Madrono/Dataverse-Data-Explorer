@@ -7,4 +7,4 @@ https://dataverse.scholarsportal.info/api/access/datafile/6654/metadata/ddi can 
 Additional url paramerets are *locale*, for changing the language (either "fr" or "en")
 And *key*, for accessing restricted content accessible to your account.
 
-This project has been adapted from [ODESI](odesi.ca) originally worked on my Dileshni Jayasinghe
+This project has been adapted from [ODESI](odesi.ca) 
