@@ -233,7 +233,6 @@ var en = {
 		cats : 'Categories',
 		compare:"My Variables",
         close : 'Close',
-        combine : 'Combine',
         subtitle : 'Sub Title',
         partitle : 'Parallel Title',
         access_authority : 'Access Authority',
