@@ -5,9 +5,9 @@
 		<label class="search_wrapper"><div class="search_icon_wrapper"><span class="glyphicon glyphicon-search search_icon"></span></div><div ng-click="clearField()" class="search_icon_remove glyphicon glyphicon-remove"></div><div class="search_field_wrapper">
 		<input class="search_field" ng-model="search_text" ng-change="updateFilter(search_text)" ng-focus="selectFilter()"></div></label>
 		<span class="formlabel btn-padding"><span class="badge ng-binding">{{filtered.length}}</span> {{lang.detailsPage.results}}</span>
-		<a class="btn btn-sm btn-primary btn-padding" href="javascript:void(0)" ng-click="downloadMyVariables()" ng-disabled="has_no_selection">{{lang.detailsPage.download_my_variables}}</a>
 		<select id="download" ng-model="my_option" class="form-control btn-padding" ng-change="downloadData(my_option);reset()">
-			<option value="0" selected="selected" label="{{lang.detailsPage.download_all}}">{{lang.detailsPage.download_all}}</option>
+			<option value="0" class="placeholder" selected >{{lang.detailsPage.download}}</option>
+			<option value="5" label="{{lang.detailsPage.download_selected_variables}}" ng-disabled="has_no_selection">{{lang.detailsPage.download_selected}}</option>
 			<option value="1" label="{{lang.detailsPage.orig_file_format}}">{{lang.detailsPage.orig_file_format}}</option>
 			<option value="2" label="{{lang.detailsPage.tab_delimited}}">{{lang.detailsPage.tab_delimited}}</option>
 			<option value="3" label="{{lang.detailsPage.rdata_format}}">{{lang.detailsPage.rdata_format}}</option>
@@ -35,10 +35,21 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="vl in filtered = (_variables | filter:filterResults) | startFrom:currentTablePage[_file_num]*tablePageSize | limitTo:tablePageSize "  ng-click="viewVariable(vl)" ng-class="{active:(vl.selected)}">
+				<tr ng-repeat="vl in filtered = (_variables | filter:filterResults) | startFrom:currentTablePage[_file_num]*tablePageSize | limitTo:tablePageSize " ng-class="{active:(vl.selected)}" ng-click="viewVariable(vl)">
 					<td>{{vl.id}}</td>
 					<td>{{vl.name}}</td>
-					<td>{{vl.label}}</td>
+					<td>
+						<table width="100%">
+						<tr>
+							<td rowspan="2">{{vl.label}}</td>
+							<td>
+							<td align="center">
+							<div ng-class="{faded:(vl.type=='col')}" class="row_but stacked_icon" title="Add as Row" ng-click="viewVariable(vl,'row'); $event.stopPropagation();"><div class='glyphicon glyphicon-minus icon_overlap1'></div><div class='glyphicon glyphicon-minus icon_overlap2'></div></div>
+							<div ng-class="{faded:(vl.type=='row')}" class="col_but stacked_icon glyphicon glyphicon-pause" title="Add as Column" ng-click="viewVariable(vl,'col'); $event.stopPropagation();"></div>
+							</td>
+						</tr>
+						</table>
+					</td>
 
 				</tr>
 			</tbody>

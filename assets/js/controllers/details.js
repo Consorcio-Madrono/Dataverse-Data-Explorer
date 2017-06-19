@@ -23,6 +23,17 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$scope.sectionModel = {}
 	//
 	$scope.citation="";
+
+	$("#details-content").height($(document).height()-$("#header").height()-$("#title").height()-30)
+	$("#left-half").resizable({handles: 'w,e'});
+	$('#left-half').resize(function(){
+	   $('#right-half').width($("#details-content").width()-$("#left-half").width()); 
+	});
+	$(window).resize(function(){
+	   $('#right-half').width($("#details-content").width()-$("#left-half").width()); 
+	   $('#left-half').height($("#details-content").height()); 
+	});
+	//$(window).trigger('resize');
 	//
 	if($scope.variableClick.params == true) {
 		$scope.active = {matches: true};
@@ -216,8 +227,8 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 			$scope.currentTablePage[i]=0;
 		}
 	}
-$scope.viewVariable = function (vl) {
-	vl.selected=!vl.selected;
+$scope.viewVariable = function (vl,dir) {
+	//assign default display catagories
 	var id=vl.vid;
 	//---
 	var temp_array=$cookies.variableCompare.split(",");
@@ -226,41 +237,64 @@ $scope.viewVariable = function (vl) {
 		//prevent blanks
 		temp_array=[] 
 	}
-	if( temp_array.indexOf(id)>-1){
-		//remove the item from the array
-		temp_array.splice( temp_array.indexOf(id),1)
+	//make sure to keep selected if only the type has changed
+	if(dir && vl.type && vl.type!=dir){
+		//keep it selected - just update the chart
+		vl.type=dir;
+		angular.element($('#combineModal')).scope().updateDataType();
+		return
 	}else{
-		temp_array.unshift(id);
+		if( temp_array.indexOf(id)>-1){
+			//remove the item from the array
+			temp_array.splice( temp_array.indexOf(id),1)
+			delete vl.type;
+		}else{
+			temp_array.unshift(id);
+			
+		}
+		//toggle the selection	
+		vl.selected=!vl.selected;
 	}
+	if(!dir){
+	   dir="row";
+	}
+	vl.type=dir;//store the type for Table View (either row or column)
 	//reset cookie to a string
 	$cookies.variableCompare = temp_array.join(",")
 	$scope.selectedVariable=temp_array;//update the chart watching variable
+	$scope.toggleButtons();
 };
 $scope.my_option = 0;
 $scope.downloadData = function (my_option) {
 	var url=base_url+file_id//api/access/datafile/$id
-	switch(Number(my_option)) {
-    case 1:
-        url+="?format=original"
-        break;
-    case 2:
-       //add nothing to download the tab file
-	    url+="?"
-        break;
+	switch(Number(my_option)){
+	case 5:
+		var temp_array=$cookies.variableCompare.split(",");
+		url=base_url+file_id+"?key="+detailsURL.key+"&variables="+temp_array.join(",");
+		break;	
+	case 1:
+		url+="?format=original"
+		break;
+	case 2:
+	       //add nothing to download the tab file
+		    url+="?"
+		break;
 	case 3:
-		 url+="?format=RData"
+		url+="?format=RData"
 		break;
 	case 4:
 		//need to prep the url a bit - should look like //https://sand9.scholarsportal.info/api/meta/datafile/15
 		var base_url_api=base_url.substring(0,base_url.indexOf("/api/"));
 		url=base_url_api+"/api/meta/datafile/"+file_id+"?"
-		break;
-    default:
+		break;	
+	default:
 		return
 	}
 	//add the key
 	url+="&key="+detailsURL.key
 	window.location.assign(url);
+	$('#download').val(-1);
+	console.log($('#download'))
 };
 $scope.goToTwoRavens =function (){
 	var base_url_api=base_url.substring(0,base_url.indexOf("/api/"));
@@ -278,16 +312,13 @@ $scope.clearField=function(){
 	$(".search_field").val("")
 	$(".search_field").trigger( "change" );
 }
-$scope.downloadMyVariables = function (vl) {
-	var temp_array=$cookies.variableCompare.split(",")
-	window.location.assign(base_url+file_id+"?key="+detailsURL.key+"&variables="+temp_array.join(","));
-};
+
 
 $scope.isChecked=function(vid){
 		var temp_array=$cookies.variableCompare.split(",")
 		return temp_array.indexOf(vid) !== -1
 }
-$scope.toggleButtons=function(vid){
+$scope.toggleButtons=function(){
 	var temp_array=$cookies.variableCompare.split(",");
 	if(temp_array.length>0 && temp_array[0]!=""){
 		$scope.has_no_selection=false
@@ -309,7 +340,6 @@ console.log($modalInstance)
 	$modalInstance.dismiss('cancel');
   };
 };  
-
 // this traverses $scope.details object. 
 var traverse = function(o,func) {
 	for (var i in o) {
