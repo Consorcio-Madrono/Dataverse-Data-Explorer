@@ -50,7 +50,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		for(var i = 0; i < $scope.data.length; i++){
 			$scope.bucket_order.push($scope.data[i].name);
 		}
-		//first remove any unwatend variables which am have been unslected
+		//first remove any unwantend variables which have been unselected
 		for(var i = old_data.length-1; i >= 0; i--){
 			var var_exists=false;
 			for(var j= 0; j < $scope.data.length; j++){
@@ -74,7 +74,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 					break;
 				}
 			}
-			//if new variable new not found
+			//if new variable not found
 			if(!var_exists){
 				new_data.push($scope.data[i])
 			}
@@ -83,8 +83,8 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		getVariableMetadata(new_data);//adds extra variable information
 		//if we already have some data just append the new values and delete any that have been removed
 		$scope.data=old_data.concat(new_data);
-		$scope.data=$scope.groupVariableMetadata($scope.data);
-		$scope.combineHTML=$scope.getCombinedTable($scope.data,$scope.data[0].vals.length);//triggers watcher update which places html
+		$scope.data=$scope.groupVariableMetadata();
+		$scope.combineHTML=$scope.getCombinedTable();//triggers watcher update which places html
 		$scope.loadingTabDetails=false
 	}
 	var createTabObj = function(_data){
@@ -98,8 +98,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 					if(i==0){
 						var_obj[j]={'name':vals[j],'vals':[]}
 					}else{
-						//load the values to the appropriate location
-						var_obj[j]['vals'].push(vals[j])
+						if(vals[j]!=""){
+							//load the values to the appropriate location
+							var_obj[j]['vals'].push(vals[j])
+						}
 					}
 				}
 			}
@@ -131,15 +133,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 	var getVariableMetadata = function(_data){
 		for(var i = 0; i < _data.length; i++){
 			var name=_data[i].name;
-			//--
-			//assign default display catagories
-			if(!_data[i].type){
-				_data[i].type="row";//"col";
-			}
-			//--
 			for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
 				if(sharedVariableStore.getVariableStore()[j].name==name){
 					//store the metadata with the object
+					_data[i].type=sharedVariableStore.getVariableStore()[j].type;
 					_data[i].label=sharedVariableStore.getVariableStore()[j].label;
 					_data[i].catgry=sharedVariableStore.getVariableStore()[j].fullData.catgry;
 					break;
@@ -154,7 +151,43 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			_data[i].catgry=temp_array;	
 		}
 	}
+	$scope.updateVariableStoreType = function(){
+		var _data=$scope.data;
+		for(var i = 0; i < _data.length; i++){
+			var name=_data[i].name;
+			for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
+				if(sharedVariableStore.getVariableStore()[j].name==name){
+					//store the metadata with the object
+					sharedVariableStore.getVariableStore()[j].type=_data[i].type;
+					break;
+				}
+			}
+			
+		}
+	}
+	//called from details.js
+	$scope.updateDataType = function(){
+		var _data=$scope.data;
+		for(var i = 0; i < _data.length; i++){
+			var name=_data[i].name;
+			for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
+				if(sharedVariableStore.getVariableStore()[j].name==name){
+					//store the metadata with the object
+					_data[i].type=sharedVariableStore.getVariableStore()[j].type;
+					break;
+				}
+			}
+			
+		}
+		//
+		$scope.groupVariableMetadata();
+		$scope.combineHTML=$scope.getCombinedTable();
+	}
+	//stacks an array with columns then rows
 	$scope.groupVariableMetadata = function(_data){
+		if(!_data){
+			_data=$scope.data;
+		}
 		var cols=[];
 		var rows=[];
 		for(var i = 0; i < _data.length; i++){
@@ -166,8 +199,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		}
 
 		return cols.concat(rows);
-	}
-	$scope.getCombinedTable =function(_data,_tot_responses){
+	};
+	$scope.getCombinedTable =function(){
+		var _data=$scope.data;
+		var _tot_responses=$scope.data[0].vals.length;
 		var html="<table id='compare_table' class='table-bordered table-condensed'>";
 		//add first row to span table allowing the dropping of variables
 		//rules if there is 1 row - there will be 4 cols (label,code,%,N)
@@ -363,7 +398,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				var bucket_id=getBucketID(col_var_array[k].concat(full_row_var_array[j]),_data,"catvalu")
 				//add the values
 				var bucket_val=getBucketValue(bucket_id)
-				var bucket_per="-"
+				var bucket_per=0;
 				if(bucket_val){
 					bucket_per=Math.round(bucket_val/_tot_responses*100*10)/10
 				}
@@ -375,7 +410,12 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 					if(bucket_per>50){
 						text_color="#ffffff";
 					}
-					html+="<td class='td_value td_center' style='background-color:"+getColorForPercentage($scope.box_bg_colors,bucket_per/100)+"; color:"+text_color+"'>"+bucket_per+"</td>"
+					html+="<td class='td_value td_center' style='background-color:"+getColorForPercentage($scope.box_bg_colors,bucket_per/100)+"; color:"+text_color+"'>"
+					if(bucket_per % 1 == 0){
+						bucket_per=String(bucket_per)+".0";
+					}
+					html+=bucket_per;
+					html+="</td>";
 				}
 			}
 			//-------
@@ -561,7 +601,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				            }
 			            }
 			            //
-						for(var i =0;i<data.length;i++){
+				for(var i =0;i<data.length;i++){
 			            	if(data[i].name==moved_id){
 								curr_pos=i;
 								//update the type
@@ -574,11 +614,12 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			            	//revert
 			            	$(ui.draggable).css({'top': 0, 'left' :0})
 			            }else{
-				             data.move(curr_pos,new_pos)
-				             scope.data=scope.groupVariableMetadata(data);
-				             scope.combineHTML= scope.getCombinedTable(scope.data,scope.data[0].vals.length);
-				             scope.$apply()
-				         }
+					data.move(curr_pos,new_pos)
+					scope.data=scope.groupVariableMetadata(data);//need to resort since cols draw before rows
+					scope.combineHTML= scope.getCombinedTable();
+					scope.updateVariableStoreType();//triggers interface type (row,col) update
+					scope.$apply()
+					}
 			        }
 			    });
 		        //
