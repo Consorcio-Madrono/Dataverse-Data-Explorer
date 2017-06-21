@@ -23,17 +23,6 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$scope.sectionModel = {}
 	//
 	$scope.citation="";
-
-	$("#details-content").height($(document).height()-$("#header").height()-$("#title").height()-30)
-	$("#left-half").resizable({handles: 'w,e'});
-	$('#left-half').resize(function(){
-	   $('#right-half').width($("#details-content").width()-$("#left-half").width()); 
-	});
-	$(window).resize(function(){
-	   $('#right-half').width($("#details-content").width()-$("#left-half").width()); 
-	   $('#left-half').height($("#details-content").height()); 
-	});
-	//$(window).trigger('resize');
 	//
 	if($scope.variableClick.params == true) {
 		$scope.active = {matches: true};
@@ -247,7 +236,6 @@ $scope.viewVariable = function (vl,dir) {
 		if( temp_array.indexOf(id)>-1){
 			//remove the item from the array
 			temp_array.splice( temp_array.indexOf(id),1)
-			delete vl.type;
 		}else{
 			temp_array.unshift(id);
 			
@@ -258,10 +246,15 @@ $scope.viewVariable = function (vl,dir) {
 	if(!dir){
 	   dir="row";
 	}
-	vl.type=dir;//store the type for Table View (either row or column)
+	if(vl.selected){
+		vl.type=dir;//store the type for Table View (either row or column)
+	}else{
+		delete vl.type;
+	}
 	//reset cookie to a string
 	$cookies.variableCompare = temp_array.join(",")
 	$scope.selectedVariable=temp_array;//update the chart watching variable
+	console.log($cookies.variableCompare)
 	$scope.toggleButtons();
 };
 $scope.my_option = 0;
@@ -490,3 +483,13 @@ function xmlToJson(xml) {
 	}
 	return obj;
 };
+//adjust the interface size
+$(function() {
+	 $( window ).resize(function() {
+	 	var details_height=$( window ).height()-$("#details-content").position().top-170
+		$('.tab_views').css({height:details_height});
+		$('#variables_table_container').css({height:details_height});
+
+	});
+
+});
