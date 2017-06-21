@@ -6473,9 +6473,10 @@ overflow:hidden;
   left: 120%;
   background-color: #ffffff;
   height:100%;
+  display:none;
 }
 .tab_views{
-  overflow-x:hidden;
+  overflow-x:auto;
   overflow-y: auto;
 
 }
@@ -6505,6 +6506,9 @@ overflow:hidden;
 }
 .tr_last > td{
 	border-top-width: 2px !important;
+}
+.td_last {
+  border-left-width: 2px !important;
 }
 .ui-state-hover{
 	background-color: rgba(49, 122, 185, 0.48);

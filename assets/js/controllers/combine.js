@@ -27,24 +27,18 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		//
 		var content_width=$("#details-content").width()
 		if(temp_array.length==0){
-			
 			$('#variables_table').css({width: content_width});
 			$('#left-half').animate({width: content_width});
 			$('#right-half').animate({left: content_width}, 700,function(){
-				$scope.showing=false;
 				$('#right-half').hide();
 				$scope.combineHTML="";
+				$scope.showing=false;
 			});
 			return;
 		}
 		if(!$scope.showing){
-			console.log($("#details-content").offset().top)
-			$('#right-half').css({top:$("#details-content").offset().top, width:content_width/2-10})
-			$('#right-half').animate({left: content_width/2+30}, 700);
 			$('#right-half').show();
-			$('#variables_table').css({width: content_width});
-			$('#left-half').animate({width: (content_width/2+20)}, 700);
-			
+			$(window).trigger('resize');
 			$scope.showing=true;
 		}
 		
@@ -53,9 +47,9 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		//var url="temp_tab/tab.tab";//temp loading of tab file
 		var url=sharedVariableStore.getVariableStoreURL()+$cookies.variableCompare.split(",").reverse();
 		$scope.pending_requests++;
-		//url should look like this
+		//url should look like this "https://dataverse.harvard.edu/api/access/datafile/2326305?variables=v13184189,v13183932,v13184076",
 		$http({
-			//url:"https://dataverse.harvard.edu/api/access/datafile/2326305?variables=v13184189,v13183932,v13184076",
+		
 			url:url,
 			method: "GET",
 			//params: {requestURL: detailsURL.uri}
@@ -194,19 +188,30 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		}
 	}
 	//called from details.js
-	$scope.updateDataType = function(){
-		var _data=$scope.data;
-		for(var i = 0; i < _data.length; i++){
-			var name=_data[i].name;
+	$scope.updateDataType = function(_obj){
+		var data=$scope.data;
+		var changed_name=_obj.name
+		var changed_pos=0;
+		//update the type
+		for(var i = 0; i < data.length; i++){
+			var name=data[i].name;
+			if(name==changed_name){
+				changed_pos=i;
+			}
 			for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
 				if(sharedVariableStore.getVariableStore()[j].name==name){
-					//store the metadata with the object
-					_data[i].type=sharedVariableStore.getVariableStore()[j].type;
+					//update
+					data[i].type=sharedVariableStore.getVariableStore()[j].type;
 					break;
 				}
 			}
-			
 		}
+		if(_obj.type=="col"){
+			//if type col move to begining of the list
+			data.move(changed_pos,0)
+		}else{
+			data.move(changed_pos,data.length-1)
+		}	
 		//
 		$scope.groupVariableMetadata();
 		$scope.combineHTML=$scope.getCombinedTable();
@@ -288,7 +293,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			total_col_count+=3
 			total_row_count+=4
 		}else if(!single_col && !single_row){
-			total_col_count+=3
+			total_col_count+=4
 			total_row_count+=4
 		}
 		//doppable row
@@ -343,15 +348,15 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 						html+=">"+var_label+"</td>";
 					}
 				}
-				//and the totals col
+				//and the totals and N col
 				if(i==0){
-					html+="<td class='td_value td_center' rowspan='"
 					var count=total_col_var_count
 					if(!no_rows){
 						count+=1
 					}
-					html+=count;
-					html+="'>Total</td>"
+					html+="<td class='td_value td_center td_last' rowspan='"+count+"'>Total</td>"
+					//
+					html+="<td class='td_value td_center' rowspan='"+count+"'>N</td>"
 				}
 
 				html+="</tr>"
@@ -497,7 +502,8 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			}
 			//add the percent totals
 			if(total_col_var_count!=0){
-				html+="<td class='td_value td_center'>"+getPercent(row_pre_total)+"</td>"
+				html+="<td class='td_value td_center td_last'>"+getPercent(row_pre_total)+"</td>"
+				html+="<td class='td_value td_center'>"+row_response_total+"</td>"
 			}
 			//-------
 			if(single_row){
@@ -535,7 +541,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				html+="<td class='td_value td_center'>"+getPercent(col_pre_totals[k])+"</td>"
 			}
 			if(total_col_var_count>0){
-				html+="<td class='td_value td_center'>"+getPercent(1)+"</td>";
+				html+="<td class='td_value td_center td_last'>"+getPercent(1)+"</td><td></td>";
 			}
 			html+="</tr>"
 			//
@@ -547,7 +553,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				html+="<td class='td_value td_center'>"+col_response_totals[k]+"</td>"
 			}
 			if(total_col_var_count>0){
-				html+="<td class='td_value td_center'>"+all_responses+"</td>";
+				html+="<td class='td_last'></td><td class='td_value td_center'>"+all_responses+"</td>";
 			}
 			html+="</tr>"
 		}
@@ -745,7 +751,9 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			            	//revert
 			            	$(ui.draggable).css({'top': 0, 'left' :0})
 			            }else{
+			            	console.log(data)
 							data.move(curr_pos,new_pos)
+							console.log(data)
 							scope.data=scope.groupVariableMetadata(data);//need to resort since cols draw before rows
 							scope.combineHTML= scope.getCombinedTable();
 							scope.updateVariableStoreType();//triggers interface type (row,col) update
@@ -797,3 +805,10 @@ Array.prototype.move = function (old_index, new_index) {
     this.splice(new_index, 0, this.splice(old_index, 1)[0]);
     return this; // for testing purposes
 };
+
+function splitInterface(){
+	var content_width=$("#details-content").width()
+	$('#right-half').stop( true, true ).animate({left: content_width/2+30}, 700);
+	$('#variables_table').css({width: content_width});
+	$('#left-half').stop( true, true ).animate({width: (content_width/2+15)}, 700);
+}

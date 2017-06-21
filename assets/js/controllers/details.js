@@ -230,10 +230,10 @@ $scope.viewVariable = function (vl,dir) {
 	if(dir && vl.type && vl.type!=dir){
 		//keep it selected - just update the chart
 		vl.type=dir;
-		angular.element($('#combineModal')).scope().updateDataType();
+		angular.element($('#combineModal')).scope().updateDataType(vl);
 		return
 	}else{
-		if( temp_array.indexOf(id)>-1){
+		if(temp_array.indexOf(id)>-1){
 			//remove the item from the array
 			temp_array.splice( temp_array.indexOf(id),1)
 		}else{
@@ -254,7 +254,6 @@ $scope.viewVariable = function (vl,dir) {
 	//reset cookie to a string
 	$cookies.variableCompare = temp_array.join(",")
 	$scope.selectedVariable=temp_array;//update the chart watching variable
-	console.log($cookies.variableCompare)
 	$scope.toggleButtons();
 };
 $scope.my_option = 0;
@@ -489,7 +488,11 @@ $(function() {
 	 	var details_height=$( window ).height()-$("#details-content").position().top-170
 		$('.tab_views').css({height:details_height});
 		$('#variables_table_container').css({height:details_height});
-
+		$('#right-half').css({top:$("#details-content").offset().top+1, width:$("#details-content").width()/2-10})
+		if($('#right-half').is(":visible")){
+			splitInterface();
+		}
 	});
 
 });
+
