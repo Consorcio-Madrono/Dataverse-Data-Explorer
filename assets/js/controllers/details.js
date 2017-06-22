@@ -486,11 +486,14 @@ function xmlToJson(xml) {
 $(function() {
 	 $( window ).resize(function() {
 	 	var details_height=$( window ).height()-$("#details-content").position().top-170
+	 	console.log(details_height)
 		$('.tab_views').css({height:details_height});
 		$('#variables_table_container').css({height:details_height});
 		$('#right-half').css({top:$("#details-content").offset().top+1, width:$("#details-content").width()/2-10})
 		if($('#right-half').is(":visible")){
 			splitInterface();
+		}else{
+			unsplitInterface()
 		}
 	});
 

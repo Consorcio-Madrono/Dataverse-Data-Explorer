@@ -27,13 +27,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		//
 		var content_width=$("#details-content").width()
 		if(temp_array.length==0){
-			$('#variables_table').css({width: content_width});
-			$('#left-half').animate({width: content_width});
-			$('#right-half').animate({left: content_width}, 700,function(){
-				$('#right-half').hide();
-				$scope.combineHTML="";
-				$scope.showing=false;
-			});
+			unsplitInterface();
 			return;
 		}
 		if(!$scope.showing){
@@ -811,4 +805,14 @@ function splitInterface(){
 	$('#right-half').stop( true, true ).animate({left: content_width/2+30}, 700);
 	$('#variables_table').css({width: content_width});
 	$('#left-half').stop( true, true ).animate({width: (content_width/2+15)}, 700);
+}
+function unsplitInterface(){
+	var content_width=$("#details-content").width()
+	$('#variables_table').css({width: content_width});
+			$('#left-half').stop( true, true ).animate({width: content_width});
+			$('#right-half').stop( true, true ).animate({left: content_width}, 700,function(){
+				$('#right-half').hide();
+				angular.element($('#combineModal')).scope().combineHTML="";
+				angular.element($('#combineModal')).scope().showing=false;
+			});
 }

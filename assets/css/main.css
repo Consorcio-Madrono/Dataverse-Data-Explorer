@@ -6386,7 +6386,7 @@ html {
     padding: 5px;
   }
   #details-page .variables-table {
-    overflow-x: scroll;
+    overflow-x: hidden;
   }
   #details-page .variables-table .row {
     margin-left: 0px;
