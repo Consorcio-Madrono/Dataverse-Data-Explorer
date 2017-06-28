@@ -745,9 +745,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			            	//revert
 			            	$(ui.draggable).css({'top': 0, 'left' :0})
 			            }else{
-			            	console.log(data)
 							data.move(curr_pos,new_pos)
-							console.log(data)
 							scope.data=scope.groupVariableMetadata(data);//need to resort since cols draw before rows
 							scope.combineHTML= scope.getCombinedTable();
 							scope.updateVariableStoreType();//triggers interface type (row,col) update
@@ -800,19 +798,3 @@ Array.prototype.move = function (old_index, new_index) {
     return this; // for testing purposes
 };
 
-function splitInterface(){
-	var content_width=$("#details-content").width()
-	$('#right-half').stop( true, true ).animate({left: content_width/2+30}, 700);
-	$('#variables_table').css({width: content_width});
-	$('#left-half').stop( true, true ).animate({width: (content_width/2+15)}, 700);
-}
-function unsplitInterface(){
-	var content_width=$("#details-content").width()
-	$('#variables_table').css({width: content_width});
-			$('#left-half').stop( true, true ).animate({width: content_width});
-			$('#right-half').stop( true, true ).animate({left: content_width}, 700,function(){
-				$('#right-half').hide();
-				angular.element($('#combineModal')).scope().combineHTML="";
-				angular.element($('#combineModal')).scope().showing=false;
-			});
-}
