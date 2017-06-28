@@ -160,8 +160,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			}
 			//lets also fix the order of the catagory values
 			var temp_array=[];
-			for(var j=0; j<_data[i].catgry.length;j++){
-				temp_array.push(_data[i].catgry[j])
+			if(typeof(_data[i].catgry)!="undefined"){
+				for(var j=0; j<_data[i].catgry.length;j++){
+					temp_array.push(_data[i].catgry[j])
+				}
 			}
 			temp_array.sort(compare);
 			_data[i].catgry=temp_array;	
