@@ -101,12 +101,7 @@ angular.module('odesiApp').controller('chartCtrl', function($scope, $cookies,sha
 					if(typeof(_variableData)=="undefined" || typeof(_variableData.plotvalues)=="undefined"){
 						return	
 					}else{
-						//artificially create data obj - we likely have value and freq
-						var temp_data=[]
-						for (var i in _variableData.plotvalues){
-							temp_data.push({labl:{"#text":i}, catvalu:{"#text":i},freq:_variableData.plotvalues[i]})
-						}
-						data = temp_data
+						data=sharedVariableStore.getVariableStore()[k].catgry;
 					}
 					
 				}
