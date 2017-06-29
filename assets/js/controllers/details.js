@@ -48,10 +48,9 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 
 				}
 				var chartable=false;
-				if(typeof($scope.details.datadscr['var'][i].variable_data)!="undefined" && typeof($scope.details.datadscr['var'][i].variable_data.plotvalues)!="undefined" && typeof($scope.details.datadscr['var'][i].catgry)!="undefined"){
-						chartable=true
-				}
-				if(typeof($scope.details.datadscr['var'][i].catgry)=="undefined"){
+
+				if(typeof($scope.details.datadscr['var'][i].variable_data)!="undefined" && typeof($scope.details.datadscr['var'][i].variable_data.plotvalues)!="undefined" && typeof($scope.details.datadscr['var'][i].catgry)=="undefined"){
+					chartable=true
 					//artificially create data obj - we likely have value and freq
 					var temp_data=[]
 					for (var j in $scope.details.datadscr['var'][i].variable_data.plotvalues){
