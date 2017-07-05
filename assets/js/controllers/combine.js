@@ -286,7 +286,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			total_col_count+=3
 			total_row_count+=3
 		}else if(single_col){
-			total_col_count+=3
+			total_col_count+=4
 			total_row_count+=4
 		}else if(!single_col && !single_row){
 			total_col_count+=4
@@ -350,9 +350,9 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 					if(!no_rows){
 						count+=1
 					}
-					html+="<td class='td_value td_center td_last' rowspan='"+count+"'>Total</td>"
+					html+="<th class='td_value td_center td_last' rowspan='"+count+"'>Total</th>"
 					//
-					html+="<td class='td_value td_center' rowspan='"+count+"'>N</td>"
+					html+="<th class='td_value td_center' rowspan='"+count+"'>N</th>"
 				}
 
 				html+="</tr>"
@@ -364,7 +364,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 						html+="<td class='td_value td_center'>"+cat_val+"</td>"
 					}
 					//plus and empty cell since no totals for codes
-					html+="<td></td>"
+					html+="<td></td><td></td>"
 					html+="</tr>"
 				}
 			}
@@ -520,19 +520,19 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				html+="<td class='td_value td_center'>"+cat_val+"</td>"
 			}
 			//add the response totals
-			html+="<td class='td_value td_center'>"+row_response_total+"</td>"
+			html+="<td class='td_value td_center'>"+row_response_total+"</td><td></td>"
 			html+="</tr>"
 		}else if(single_row){
 			//add a row with the totals
 			html+="<tr class='tr_last'>"
-			html+="<td class='"+td_class+"'>Total</td>"
+			html+="<th class='td_value'>Total</th>"
 			html+="<td class='td_value'></td>"
 			html+="<td class='td_value'></td>"
 			html+="<td class='td_value'>"+totals[0]+"</td>"
 			html+="</tr>"
 		}else{
 			html+="<tr class='tr_last'>"
-			html+="<td colspan='"+total_row_var_count+"'>Total</td>"
+			html+="<th colspan='"+total_row_var_count+"'>Total</th>"
 			for(var k=0;k<col_pre_totals.length;k++){
 				html+="<td class='td_value td_center'>"+getPercent(col_pre_totals[k])+"</td>"
 			}
@@ -542,7 +542,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			html+="</tr>"
 			//
 			html+="<tr >"
-			html+="<td colspan='"+total_row_var_count+"'>N</td>"
+			html+="<th colspan='"+total_row_var_count+"'>N</th>"
 			var all_responses=0;
 			for(var k=0;k<col_pre_totals.length;k++){
 				all_responses+=col_response_totals[k]
