@@ -12,7 +12,8 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$scope._variables;
 	$scope.variableClick = variableClick
 	$scope.variableQuery = variableQuery;
-	$cookies.variableCompare = "";
+	$scope.selectedVariable;
+	$scope.view="chart";
 	$scope.searchParams = searchParams;	
 	$scope._variableData;
 	$scope._filtered_num=0;
@@ -33,28 +34,65 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$(".nav-tabs").append("<span id='deselect_x' class='sortHandle glyphicon glyphicon-remove' style='cursor:pointer;'></span>");
 
 	$( "#deselect_x" ).click(function() {
-	
-	  var temp_array=$cookies.variableCompare.split(",");
-	
-	
+	  var temp_array=sharedVariableStore.getVariableCompare();
 	 	 for (var i = 0; i < temp_array.length; i++){
  			for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
- 				if(sharedVariableStore.getVariableStore()[j].vid==temp_array[i]){
+ 				if(sharedVariableStore.getVariableStore()[j].vid==temp_array[i].id){
 					//store the metadata with the object
 					sharedVariableStore.getVariableStore()[j].selected=false
+					sharedVariableStore.getVariableStore()[j].type="";
+					break;
+				}
+			}		
+		}
+	  sharedVariableStore.setVariableCompare([])
+	  $scope.updateURLParams([]);
+	  unsplitInterface();
+	});
+  var selectVariables = function(variables){
+  	if(!variables){
+  		return;
+  	}
+	for (var i = 0; i < variables.length; i++){
+ 			for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
+ 				if(sharedVariableStore.getVariableStore()[j].vid==variables[i].id){
+					//store the metadata with the object
+					sharedVariableStore.getVariableStore()[j].selected=true
+					sharedVariableStore.getVariableStore()[j].type=variables[i].type
 					break;
 				}
 			}		
 		}
 
-	  $scope.selectedVariable=""
-	  $cookies.variableCompare=""
-	});
+		sharedVariableStore.setVariableCompare(variables);
+		$scope.selectedVariable=encodeURIComponent(JSON.stringify(variables));
+		if(getParameterByName("view")=="table"){
+			//show tabular view
+			setTimeout(function(){  $('.nav-tabs a:eq(1)').trigger("click") }, 5);
+		}
+  }
+	$scope.updateURLParams = function(selection,view) {
+	  	if(selection){
+	  		$scope.selectedVariable=encodeURIComponent(JSON.stringify(selection));
+	  		sharedVariableStore.setVariableCompare(selection)
+	  	}
+	  	if(view){
+	  		$scope.view=view
+	  	}
+	  	//make sure to retain existing params
+	  	var obj={};
+		for(var i in detailsURL){
+			obj[i]=detailsURL[i];
+		}
+		obj.selected=$scope.selectedVariable;
+		obj.view=$scope.view
+	  	$location.search(obj);
+	}
 	//
 	var populateVariables = function() {
-		//get a piece of the citation for display
-		var citation_pieces=$scope.details.stdydscr.citation.biblcit["#text"].split(",")
-		$scope.citation=citation_pieces[0]+", "+citation_pieces[1]+", "+citation_pieces[2]
+		//create the citation
+		var id_node=$scope.details.stdydscr.citation.titlstmt.idno;
+		createCitation($scope.details.stdydscr.citation.biblcit["#text"], id_node.agency,id_node["#text"]);
 		//create a reference to a specific link for dataverse
 		$scope.surveyVariables = [];
 		if ($scope.details.datadscr ){
@@ -81,10 +119,6 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					//update the catgry for reuse
 					$scope.details.datadscr['var'][i].catgry=temp_data;
 				}
-
-						
-				
-				//if ($scope.details.datadscr['var'][i].labl){
 					
 					//exception for dataverse
 					var labl=""
@@ -133,7 +167,6 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 									//take the new url for better linking - note this simply downloads the data in the case of dataverse
 									uri=file_obj.URI[0]
 									//console.log(file_obj)
-									//console.log(file_obj)
 									//create a new variable "vl.file_note" for file title display
 									for(var k=0;k<file_obj.notes.length;k++){
 										if(file_obj.notes[k].type=="vdc:category"){
@@ -176,7 +209,6 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 								$scope.survey_files_filtered[file_array_pos_filtered][2].push(var_obj);
 							}
 						}
-					//}
 					//
 					var index = $scope.surveyVariables.length - 1;
 					//exception for joining prep with details
@@ -258,57 +290,66 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 			$scope.currentTablePage[i]=0;
 		}
 	}
-$scope.viewVariable = function (vl,dir) {
+$scope.viewVariable = function (vl,type) {
 	//assign default display catagories
 	var id=vl.vid;
 	//---
-	var temp_array=$cookies.variableCompare.split(",");
-	
-	if($cookies.variableCompare==""){
-		//prevent blanks
-		temp_array=[] 
-	}
+	var temp_array=sharedVariableStore.getVariableCompare();
 	//make sure to keep selected if only the type has changed
-	if(dir && vl.type && vl.type!=dir){
+	if(type && vl.type && vl.type!=type){
 		//keep it selected - just update the chart
-		vl.type=dir;
+		vl.type=type;
 		angular.element($('#combineModal')).scope().updateDataType(vl);
-		return
-	}else{
-		if(temp_array.indexOf(id)>-1){
-			//remove the item from the array
-			temp_array.splice( temp_array.indexOf(id),1)
+		//also need to modify the temp array
+		var slot=temp_array.findIndex(x => x.id==id);
+		temp_array.splice( slot,1);
+		if(type=="row"){
+			//put at begining - note the reverse of the table view ordering
+			temp_array.unshift({"id":id, "type":type});
 		}else{
-			temp_array.unshift(id);
-			
+			//put at end
+			temp_array.push({"id":id, "type":type});
 		}
-		//toggle the selection	
-		vl.selected=!vl.selected;
+		$scope.updateURLParams(temp_array)
+		return
 	}
-	if(!dir){
-	    dir="row";
+	if(!type){
+	    type="row";
 	}else{
 		//show tabular view
 		setTimeout(function(){  $('.nav-tabs a:eq(1)').trigger("click") }, 5);
 	}
-
+	var result=$.grep(temp_array, function(e){ return e.id == id; });
+	if(result.length!=0){
+		//remove the item from the array
+		temp_array.splice( temp_array.findIndex(x => x.id==id),1)
+	}else{
+		temp_array.unshift({"id":id, "type":type});
+		
+	}
+	//toggle the selection	
+	vl.selected=!vl.selected;
+	
 	if(vl.selected){
-		vl.type=dir;//store the type for Table View (either row or column)
+		vl.type=type;//store the type for Table View (either row or column)
 	}else{
 		delete vl.type;
 	}
-	//reset cookie to a string
-	$cookies.variableCompare = temp_array.join(",")
-	$scope.selectedVariable=temp_array;//update the chart watching variable
-	$scope.toggleButtons();
+	//update the state
+	
+	$scope.updateURLParams(temp_array) 
 };
 $scope.my_option = 0;
 $scope.downloadData = function (my_option) {
 	var url=base_url+file_id//api/access/datafile/$id
 	switch(Number(my_option)){
 	case 5:
-		var temp_array=$cookies.variableCompare.split(",");
-		url=base_url+file_id+"?key="+detailsURL.key+"&variables="+temp_array.join(",");
+		var temp_array=sharedVariableStore.getVariableCompare()
+		var temp_array2=[]
+		for(var i = 0; i < temp_array.length; i++){
+			temp_array2.push(temp_array[i].id);
+		};
+		url=base_url+file_id+"?key="+detailsURL.key+"&variables="+temp_array2.join(",");
 		break;	
 	case 1:
 		url+="?format=original"
@@ -332,7 +373,6 @@ $scope.downloadData = function (my_option) {
 	url+="&key="+detailsURL.key
 	window.location.assign(url);
 	$('#download').val(-1);
-	console.log($('#download'))
 };
 $scope.goToTwoRavens =function (){
 	var base_url_api=base_url.substring(0,base_url.indexOf("/api/"));
@@ -352,50 +392,45 @@ $scope.clearField=function(){
 }
 
 
-$scope.isChecked=function(vid){
-		var temp_array=$cookies.variableCompare.split(",")
-		return temp_array.indexOf(vid) !== -1
-}
-$scope.toggleButtons=function(){
-	var temp_array=$cookies.variableCompare.split(",");
-	if(temp_array.length>0 && temp_array[0]!=""){
-		$scope.has_no_selection=false
-	}else{
-		$scope.has_no_selection=true
-	}	
-}
-	
- var ModalInstanceCtrl = function ($scope, $modalInstance, items) {
-console.log($modalInstance)
-
-  $scope.selectedVariable = items
-
-  $scope.ok = function () {
-	$modalInstance.close();
-  };
-
-  $scope.cancel = function () {
-	$modalInstance.dismiss('cancel');
-  };
-};  
-// this traverses $scope.details object. 
-var traverse = function(o,func) {
-	for (var i in o) {
-		func.apply(this,[i,o[i]]);  
-		if (o[i] !== null && typeof(o[i])=="object") {
-			//going on step down in the object tree!!
-			traverse(o[i],func);
+	// this traverses $scope.details object. 
+	var traverse = function(o,func) {
+		for (var i in o) {
+			func.apply(this,[i,o[i]]);  
+			if (o[i] !== null && typeof(o[i])=="object") {
+				//going on step down in the object tree!!
+				traverse(o[i],func);
+			}
 		}
+	}    
+	var createCitation = function(citation,agency,id){
+		var link;
+		if(agency=="hdl"){
+			link="dx.doi.org"
+		}else{
+			link="hdl.handle.net"
+		}
+		link="http://"+link+"/"+id
+		//inject the url into the citation
+		var re = new RegExp(agency+"([^,]+)", "g")
+		var match = re.exec(citation);
+		
+		citation=citation.replace(match[0], "<a href='"+link+"' target='_new'>"+match[0]+"</a>");
+		$("#citation").html(citation);
 	}
-}     
+
+
 	///////////////////////
 	/*
 	Entry point of application
 	*/
 	//////////////////////
-	detailsURL.uri=getParameterByName("uri")
-	detailsURL.key=getParameterByName("key")
-	
+	detailsURL.uri=getParameterByName("uri");
+	detailsURL.key=getParameterByName("key");
+	detailsURL.locale=getParameterByName("locale")
+	detailsURL.selected=getParameterByName("selected");
+	if(detailsURL.selected){
+		detailsURL.selected = JSON.parse(decodeURIComponent(detailsURL.selected));
+	}
 	$http({
 		url: detailsURL.uri, 
 		method: "GET",
@@ -432,6 +467,8 @@ var traverse = function(o,func) {
 				populateVariables();          		
 				$scope.loadingDetails = false;
 				$(".overlay").fadeOut();
+				//try to show a previous selection if exists
+				selectVariables(detailsURL.selected);
 			}
 		}		
 			   
@@ -443,7 +480,8 @@ $scope.show = {};
 })
 .controller('PagerCtrl', function($scope){
 	$scope.showPaging =true;
-}).directive('tabs', function() {
+})
+.directive('tabs',  function() {
     return {
       restrict: 'E',
       transclude: true,
@@ -456,6 +494,13 @@ $scope.show = {};
             pane.selected = false;
           });
           pane.selected = true;
+          var view = 'chart';
+          if(pane.title.toLowerCase().indexOf("table")>-1){
+		          view='table';
+          }
+		  if(angular.element($('#details-page')).scope().view !=view){
+		       angular.element($('#details-page')).scope().updateURLParams(null,view)
+		   }
         }
  
         this.addPane = function(pane) {
@@ -474,8 +519,8 @@ $scope.show = {};
         '</div>',
       replace: true
     };
-  }).
-  directive('pane', function() {
+  })
+.directive('pane', function() {
     return {
       require: '^tabs',
       restrict: 'E',
@@ -490,10 +535,7 @@ $scope.show = {};
       replace: true
     };
   })
-/////////////////////
-
-
-				
+////////////////////////				
 // Changes XML to JSON		
 function xmlToJson(xml) {
 	// Create the return object
@@ -544,19 +586,19 @@ $(function() {
 
 });
 function splitInterface(){
+	$('#right-half').show();
 	var content_width=$("#details-content").width()
-	$('#right-half').stop( true, true ).animate({left: content_width/2+30}, 700);
+	$('#right-half').finish().animate({left: content_width/2+30}, 700);
 	$('#variables_table').css({width: content_width});
-	$('#left-half').stop( true, true ).animate({width: (content_width/2+15)}, 700);
+	$('#left-half').finish().animate({width: (content_width/2+15)}, 700);
 }
 function unsplitInterface(){
 	var content_width=$("#details-content").width()
 	$('#variables_table').css({width: content_width});
-			$('#left-half').stop( true, true ).animate({width: content_width});
-			$('#right-half').stop( true, true ).animate({left: content_width}, 700,function(){
-				$('#right-half').hide();
-				angular.element($('#combineModal')).scope().combineHTML="";
-				angular.element($('#combineModal')).scope().showing=false;
-			});
+			$('#left-half').finish().animate({width: content_width});
+			$('#right-half').finish().animate({left: content_width}, 700);
+			$('#right-half').hide();
+			angular.element($('#combineModal')).scope().combineHTML="";
+			angular.element($('#combineModal')).scope().showing=false;
 }
 

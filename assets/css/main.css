@@ -6542,3 +6542,11 @@ select > .placeholder {
   margin-right:10px;
   float:right;
 }
+#citation{
+  display:block;
+  margin-bottom: 10px;
+}
+#legend{
+   margin-left: 15px;
+   font-weight: bold;
+}

@@ -8,7 +8,8 @@ app.config(['$routeProvider', '$locationProvider',
         .
         otherwise({
            templateUrl: 'partials/details.html',
-			controller: 'detailsCtrl'
+			controller: 'detailsCtrl',
+			reloadOnSearch: false
         });
     }
 ]).filter('tablePaginate', function() {
@@ -62,6 +63,7 @@ app.config(['$routeProvider', '$locationProvider',
 		//store all the variables in a global object for reuse
 		 var variableStore={};
 		 var variableStoreURL="";
+		 var variableCompare=[];
 		 return {
 	            getVariableStore: function () {
 	                return variableStore;
@@ -74,6 +76,12 @@ app.config(['$routeProvider', '$locationProvider',
 	            },
 	            setVariableStoreURL: function(value) {
 	            	variableStoreURL = value;
+	            },
+	            getVariableCompare: function () {
+	                return variableCompare;
+	            },
+	            setVariableCompare: function(value) {
+	            	variableCompare = value;
 	            }
 	        };
     }).service('filterService', function() {

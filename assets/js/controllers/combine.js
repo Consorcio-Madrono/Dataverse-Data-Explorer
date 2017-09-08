@@ -11,35 +11,39 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 	$scope.box_bg_colors = [
     { pct: 0.0, color: { r: 0xff, g: 0xff, b: 0xff } },
     { pct: 1.0, color: { r: 49, g: 122, b: 185 } } ];
+    $scope.box_bg_colors2 = [
+    { pct: 0.0, color: { r: 0xff, g: 0xff, b: 0xff } },
+    { pct: 1.0, color: { r: 197, g: 54, b: 54 } } ];
     //store the mouse position for use in testing drpping of variables
 	$(window).mousemove(function(e){
       window.mouse_x = e.pageX;
       window.mouse_y = e.pageY;
    	}); 
-		$(window).trigger('resize');
+	drawLegend();
 	$scope.$watch ('selectedVariable', function(){
 		
 		$scope.variableCompare=[];//all the selected variables
-		var temp_array=[]
-		if($cookies.variableCompare){
-			var temp_array=$cookies.variableCompare.split(",");//because they are stored in an serialized array	
-		}
+		var temp_array=sharedVariableStore.getVariableCompare();
 		//
-		var content_width=$("#details-content").width()
 		if(temp_array.length==0){
 			unsplitInterface();
 			return;
 		}
 		if(!$scope.showing){
 			$('#right-half').show();
-			$(window).trigger('resize');
 			$scope.showing=true;
+			$(window).trigger('resize');
 		}
 		
 		$scope.loadingTabDetails=true;
 		//----------------------
 		//var url="temp_tab/tab.tab";//temp loading of tab file
-		var url=sharedVariableStore.getVariableStoreURL()+$cookies.variableCompare.split(",").reverse();
+		var temp_array=sharedVariableStore.getVariableCompare()
+		var temp_array2=[]
+		for(var i = 0; i < temp_array.length; i++){
+			temp_array2.push(temp_array[i].id);
+		};
+		var url=sharedVariableStore.getVariableStoreURL()+temp_array2.reverse().join(",");
 		$scope.pending_requests++;
 		//url should look like this "https://dataverse.harvard.edu/api/access/datafile/2326305?variables=v13184189,v13183932,v13184076",
 		$http({
@@ -209,7 +213,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			data.move(changed_pos,data.length-1)
 		}	
 		//
-		$scope.groupVariableMetadata();
+		var _data= $scope.groupVariableMetadata();
 		$scope.combineHTML=$scope.getCombinedTable();
 	}
 	//stacks an array with columns then rows
@@ -439,7 +443,45 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		if(typeof(col_var_array[0])=="undefined"){
 			col_var_array[0]=[]
 		}
-		//---------
+		//calculate the standard deviation
+		//get the mean of the values as avg_bucket_val
+		var bucket_val_total=0;
+		var bucket_vals=[6,2,3,1];
+		for(var j=0; j<total_rows;j++){
+			for(var k=0; k<col_var_array.length;k++){
+				var bucket_id=getBucketID(col_var_array[k].concat(full_row_var_array[j]),_data,"catvalu")
+				//add the values
+				var val=getBucketValue(bucket_id)
+				if(!isNaN(val)){
+					bucket_vals.push(val);
+				}else{
+					bucket_vals.push(0);
+				}
+			}
+		}
+		var bucket_val_total=0;
+		for (var j = 0; j < bucket_vals.length; j++) {
+		    bucket_val_total += bucket_vals[j];
+		}
+		//console.log("bucket_val_total ",bucket_val_total)
+		var avg_bucket_val=bucket_val_total/bucket_vals.length;
+		//Now get the total distance of all the points from that number
+		//console.log("avg_bucket_val",avg_bucket_val)
+		var bucket_vals_dist=[];
+		//get bucket_vals_dist to exp 2
+		//console.log("bucket_vals",bucket_vals)
+		for (var j = 0; j < bucket_vals.length; j++) {
+		   bucket_vals_dist.push(Math.pow(Math.abs(bucket_vals[j]-avg_bucket_val),2))
+		}
+		//console.log("bucket_vals_dist "+bucket_vals_dist);
+		var bucket_vals_dist_total=0;
+		//sum bucket_vals_dist
+		for (var j = 0; j < bucket_vals_dist.length; j++) {
+		   bucket_vals_dist_total+=bucket_vals_dist[j];
+		}
+		var standard_dev=Math.sqrt(bucket_vals_dist_total/bucket_vals_dist.length);
+		//console.log("standard_dev "+standard_dev)
+		//-------
 		var col_pre_totals=[];
 		var col_response_totals=[];
 		for(var j=0; j<total_rows;j++){
@@ -453,6 +495,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				html+="<td class='td_value td_center'>%</td>"
 			}
 			//------------
+			
 			var row_pre_total=0;
 			var row_response_total=0;
 			for(var k=0; k<col_var_array.length;k++){
@@ -481,12 +524,23 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				if(mode=="debug"){
 					html+="<td class='td_value td_center'>"+col_var_array[k].concat(full_row_var_array[j])+"</td>"
 				}else{
-					//change the rtext color depending on the percent for visiblility
+					
+					//color the cell based relative to the average
+					var z=(bucket_val-avg_bucket_val)/standard_dev;
+					var cell_color;
+					//console.log("z of "+bucket_val+" is "+z )
+					if(z>0){
+						cell_color=getColorForPercentage($scope.box_bg_colors2,z)
+					}else{
+						cell_color=getColorForPercentage($scope.box_bg_colors,z*-1)
+					}
+					//change the text color depending on the percent for cell color visiblility
 					var text_color="#000000";
-					if(bucket_per>50){
+					if(Math.abs(z)>.5){
 						text_color="#ffffff";
 					}
-					html+="<td class='td_value td_center' style='background-color:"+getColorForPercentage($scope.box_bg_colors,bucket_per/100)+"; color:"+text_color+"'>"
+					//
+					html+="<td class='td_value td_center' style='background-color:"+cell_color+"; color:"+text_color+"'>"
 					if(bucket_per % 1 == 0){
 						bucket_per=String(bucket_per)+".0";
 					}
@@ -653,6 +707,34 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			}
 		}
 	}
+//-----
+function drawLegend(){
+	var html="";
+	html+="<table>";
+	html+="<tr>"; 
+	html+="<td>Z-Score&nbsp;</td>";
+	html+="<td id='left_gradient'></td>";
+	html+="<td><0<</td>";
+	html+="<td id='right_gradient'></td>";
+	html+="</tr>";
+	html+="</table>";
+	$("#legend").html(html);
+	$("#left_gradient").css(getCSSGradient($scope.box_bg_colors[0].color,$scope.box_bg_colors[1].color,"right","left"));
+	$("#right_gradient").css(getCSSGradient($scope.box_bg_colors2[0].color,$scope.box_bg_colors2[1].color,"left","right"));
+}
+function getCSSGradient(_start_color,_end_color,dir1,dir2){
+	var start_color  = "rgb("+_start_color.r+", "+_start_color.g+", "+_start_color.b+")";
+	var end_color  = "rgb("+_end_color.r+", "+_end_color.g+", "+_end_color.b+")";
+	return {
+		width:150,
+		height:20,
+		background: start_color,
+		background: "-webkit-linear-gradient("+dir1+","+start_color+", "+start_color+", "+end_color+")",
+		background: "-o-linear-gradient("+dir2+","+start_color+", "+end_color+")",
+		background: "-moz-linear-gradient("+dir2+","+start_color+", "+end_color+")", 
+		background: "linear-gradient(to "+dir2+","+start_color+", "+end_color+")"
+	}
+}
 
 }).directive('dynamic', function ($compile) {
 	return {
@@ -669,7 +751,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		      	$("#compare_table .draggable").draggable({
 		        	handle: '.sortHandle',
 		        	opacity: 0.7,
-		        	//containment: "#compare_table",
+		        	containment: "#compare_table",
 		        	start: function(event, ui){
 						$(event.target).css({'z-index': 1000});
 					},
@@ -689,7 +771,8 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 							for(var i =0;i<scope.sharedVariableStore.getVariableStore().length;i++){
 								var obj=scope.sharedVariableStore.getVariableStore()[i]
 			            		if(obj.name==$(this).attr('id')){
-					 				angular.element($('#details-page')).scope().viewVariable(obj)
+			            			//deselect the item, thus removing it from the table
+					 				//angular.element($('#details-page')).scope().viewVariable(obj)
 					 				scope.$apply()
 					 			}
 					 		}
@@ -734,7 +817,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				            }
 			            }
 			            //
-				for(var i =0;i<data.length;i++){
+						for(var i =0;i<data.length;i++){
 			            	if(data[i].name==moved_id){
 								curr_pos=i;
 								//update the type
@@ -751,8 +834,14 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 							scope.data=scope.groupVariableMetadata(data);//need to resort since cols draw before rows
 							scope.combineHTML= scope.getCombinedTable();
 							scope.updateVariableStoreType();//triggers interface type (row,col) update
+							
+							//update the state - noting it's in reverse
+							var temp_array=scope.sharedVariableStore.getVariableCompare().reverse();
+							temp_array[curr_pos].type=new_type;
+							temp_array.move(curr_pos,new_pos);
+							angular.element($('#details-page')).scope().updateURLParams(temp_array.reverse())
 							scope.$apply()
-							}
+						}
 			        }
 			    });
 		        //
@@ -799,4 +888,3 @@ Array.prototype.move = function (old_index, new_index) {
     this.splice(new_index, 0, this.splice(old_index, 1)[0]);
     return this; // for testing purposes
 };
-
