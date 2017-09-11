@@ -528,11 +528,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 					//color the cell based relative to the average
 					var z=(bucket_val-avg_bucket_val)/standard_dev;
 					var cell_color;
-					//console.log("z of "+bucket_val+" is "+z )
 					if(z>0){
-						cell_color=getColorForPercentage($scope.box_bg_colors2,z)
+						cell_color=getColorForPercentage($scope.box_bg_colors2,z/2)
 					}else{
-						cell_color=getColorForPercentage($scope.box_bg_colors,z*-1)
+						cell_color=getColorForPercentage($scope.box_bg_colors,z/2*-1)
 					}
 					//change the text color depending on the percent for cell color visiblility
 					var text_color="#000000";
@@ -713,9 +712,9 @@ function drawLegend(){
 	html+="<table>";
 	html+="<tr>"; 
 	html+="<td>Z-Score&nbsp;</td>";
-	html+="<td id='left_gradient'></td>";
+	html+="<td id='left_gradient' style='color:#fff; padding-left:5px;'-2<</td>";
 	html+="<td><0<</td>";
-	html+="<td id='right_gradient'></td>";
+	html+="<td id='right_gradient' style='text-align:right; color:#fff; padding-right:5px;'><2</td>";
 	html+="</tr>";
 	html+="</table>";
 	$("#legend").html(html);
