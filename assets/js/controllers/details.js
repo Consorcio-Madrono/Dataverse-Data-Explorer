@@ -99,6 +99,10 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 			var counter=0
 			for (var i = 0; i < $scope.details.datadscr['var'].length; i++){
 				counter++
+				if($scope.details.datadscr['var'][i].name.toLowerCase().indexOf("weight")>-1){
+					console.log("we havea weight")
+				}
+				
 				//join the variable data
 				$scope.details.datadscr['var'][i].variable_data=$scope._variableData[$scope.details.datadscr['var'][i].name]
 				//

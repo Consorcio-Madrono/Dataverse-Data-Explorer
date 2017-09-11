@@ -712,7 +712,7 @@ function drawLegend(){
 	html+="<table>";
 	html+="<tr>"; 
 	html+="<td>Z-Score&nbsp;</td>";
-	html+="<td id='left_gradient' style='color:#fff; padding-left:5px;'-2<</td>";
+	html+="<td id='left_gradient' style='color:#fff; padding-left:5px;'>-2<</td>";
 	html+="<td><0<</td>";
 	html+="<td id='right_gradient' style='text-align:right; color:#fff; padding-right:5px;'><2</td>";
 	html+="</tr>";
