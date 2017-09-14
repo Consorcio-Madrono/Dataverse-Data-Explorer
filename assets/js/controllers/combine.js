@@ -446,7 +446,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		//calculate the standard deviation
 		//get the mean of the values as avg_bucket_val
 		var bucket_val_total=0;
-		var bucket_vals=[6,2,3,1];
+		var bucket_vals=[];
 		for(var j=0; j<total_rows;j++){
 			for(var k=0; k<col_var_array.length;k++){
 				var bucket_id=getBucketID(col_var_array[k].concat(full_row_var_array[j]),_data,"catvalu")
@@ -535,7 +535,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 					}
 					//change the text color depending on the percent for cell color visiblility
 					var text_color="#000000";
-					if(Math.abs(z)>.5){
+					if(Math.abs(z)/2>.5){
 						text_color="#ffffff";
 					}
 					//

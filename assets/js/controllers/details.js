@@ -24,6 +24,8 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$scope.sectionModel = {}
 	//
 	$scope.citation="";
+	$scope.weights=[];
+	$scope.weight_on=false;
 	//
 	if($scope.variableClick.params == true) {
 		$scope.active = {matches: true};
@@ -32,7 +34,6 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	};
 	//
 	$(".nav-tabs").append("<span id='deselect_x' class='sortHandle glyphicon glyphicon-remove' style='cursor:pointer;'></span>");
-
 	$( "#deselect_x" ).click(function() {
 	  var temp_array=sharedVariableStore.getVariableCompare();
 	 	 for (var i = 0; i < temp_array.length; i++){
@@ -99,9 +100,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 			var counter=0
 			for (var i = 0; i < $scope.details.datadscr['var'].length; i++){
 				counter++
-				if($scope.details.datadscr['var'][i].name.toLowerCase().indexOf("weight")>-1){
-					console.log("we havea weight")
-				}
+
 				
 				//join the variable data
 				$scope.details.datadscr['var'][i].variable_data=$scope._variableData[$scope.details.datadscr['var'][i].name]
@@ -110,6 +109,10 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					//it might be nested in "variables" 
 					$scope.details.datadscr['var'][i].variable_data=$scope._variableData.variables[$scope.details.datadscr['var'][i].name]
 
+				}
+				//check if this is a weight varible
+				if($scope.details.datadscr['var'][i].name.toLowerCase().indexOf("weight")>-1){
+					$scope.weights.push($scope.details.datadscr['var'][i].variable_data);
 				}
 				var chartable=false;
 
@@ -538,7 +541,12 @@ $scope.show = {};
         '</div>',
       replace: true
     };
-  })
+  }).controller('weightCtrl', function($scope) {
+	$('#weight_but').click(function(e) { 
+			e.preventDefault(); 
+			$scope.weight_on=!$scope.weight_on;
+		})
+  });
 ////////////////////////				
 // Changes XML to JSON		
 function xmlToJson(xml) {
@@ -589,6 +597,7 @@ $(function() {
 	});
 
 });
+
 function splitInterface(){
 	$('#right-half').show();
 	var content_width=$("#details-content").width()
