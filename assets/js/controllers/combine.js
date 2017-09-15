@@ -45,9 +45,16 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		};
 		var url=sharedVariableStore.getVariableStoreURL()+temp_array2.reverse().join(",");
 		$scope.pending_requests++;
+		//
+		if(sharedVariableStore.getWeightOn()){
+			//get the weights of the selected variables
+			for(var i =0;i<sharedVariableStore.getWeights().length;i++){
+				url+=","+sharedVariableStore.getWeights()[i].id
+			}
+			
+		}
 		//url should look like this "https://dataverse.harvard.edu/api/access/datafile/2326305?variables=v13184189,v13183932,v13184076",
 		$http({
-		
 			url:url,
 			method: "GET",
 			//params: {requestURL: detailsURL.uri}
@@ -66,6 +73,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		}
 		$scope.data=createTabObj(data);
 		$scope.buckets=createBuckets($scope.data);
+		//if there are weights - remove them from the data
+		if(sharedVariableStore.getWeightOn()){
+			$scope.data=$scope.data.slice(0,$scope.data.length-sharedVariableStore.getWeights().length)
+		}
 		$scope.bucket_order=[];
 		for(var i = 0; i < $scope.data.length; i++){
 			$scope.bucket_order.push($scope.data[i].name);
@@ -130,20 +141,27 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 	//loop through the variables looking for unique enteries
 	var createBuckets = function(_data){
 		var buckets=[];
-		//loop through the first row and chack against others
+		//loop through the first row and check against others
 		var rows=_data[0].vals.length;
+		var weight_count=0
+		if(sharedVariableStore.getWeightOn()){
+				weight_count=sharedVariableStore.getWeights().length
+		}
 		for(var i = 0; i < rows; i++){
-
 			var combined_val="";
 			//combine with others and look for uniqueness
-			for (var j = 0;j< _data.length;j++){
+			var weight=1;
+			for (var j = 0;j< _data.length-weight_count;j++){
 				combined_val+="_"+_data[j].vals[i]
+				if(sharedVariableStore.getWeightOn()){
+				 weight=_data[_data.length-1].vals[i]
+				}
 			}
 			if(buckets.indexOf(combined_val)==-1){
 				buckets.push(combined_val)
-				buckets[combined_val]=1
+				buckets[combined_val]=1*weight
 			}else{
-				buckets[combined_val]=buckets[combined_val]+1;
+				buckets[combined_val]=buckets[combined_val]+(1*weight);
 			}
 			
 		}
@@ -552,11 +570,11 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			//add the percent totals
 			if(total_col_var_count!=0){
 				html+="<td class='td_value td_center td_last'>"+getPercent(row_pre_total)+"</td>"
-				html+="<td class='td_value td_center'>"+row_response_total+"</td>"
+				html+="<td class='td_value td_center'>"+Math.round(row_response_total*10)/10+"</td>"
 			}
 			//-------
 			if(single_row){
-				html+="<td class='td_value td_center'>"+bucket_val+"</td>"
+				html+="<td class='td_value td_center'>"+Math.round(bucket_val*10)/10+"</td>"
 			}
 			html+="</tr>"
 			totals[0]=Number(totals[0])+Number(bucket_val)
@@ -573,7 +591,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				html+="<td class='td_value td_center'>"+cat_val+"</td>"
 			}
 			//add the response totals
-			html+="<td class='td_value td_center'>"+row_response_total+"</td><td></td>"
+			html+="<td class='td_value td_center'>"+Math.round(row_response_total*10)/10+"</td><td></td>"
 			html+="</tr>"
 		}else if(single_row){
 			//add a row with the totals
@@ -581,7 +599,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			html+="<th class='td_value'>Total</th>"
 			html+="<td class='td_value'></td>"
 			html+="<td class='td_value'></td>"
-			html+="<td class='td_value'>"+totals[0]+"</td>"
+			html+="<td class='td_value'>"+Math.round(totals[0]*10)/10+"</td>"
 			html+="</tr>"
 		}else{
 			html+="<tr class='tr_last'>"
@@ -599,10 +617,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			var all_responses=0;
 			for(var k=0;k<col_pre_totals.length;k++){
 				all_responses+=col_response_totals[k]
-				html+="<td class='td_value td_center'>"+col_response_totals[k]+"</td>"
+				html+="<td class='td_value td_center'>"+Math.round(col_response_totals[k]*10)/10+"</td>"
 			}
 			if(total_col_var_count>0){
-				html+="<td class='td_last'></td><td class='td_value td_center'>"+all_responses+"</td>";
+				html+="<td class='td_last'></td><td class='td_value td_center'>"+Math.round(all_responses*10)/10+"</td>";
 			}
 			html+="</tr>"
 		}

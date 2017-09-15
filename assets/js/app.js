@@ -64,6 +64,8 @@ app.config(['$routeProvider', '$locationProvider',
 		 var variableStore={};
 		 var variableStoreURL="";
 		 var variableCompare=[];
+		 var weightOn=false;
+		 var weights=[];
 		 return {
 	            getVariableStore: function () {
 	                return variableStore;
@@ -82,6 +84,18 @@ app.config(['$routeProvider', '$locationProvider',
 	            },
 	            setVariableCompare: function(value) {
 	            	variableCompare = value;
+	            },
+	            getWeightOn: function () {
+	                return weightOn;
+	            },
+	            setWeightOn: function(value) {
+	            	weightOn = value;
+	            },
+	            getWeights: function () {
+	                return weights;
+	            },
+	            addWeights: function(value) {
+	            	weights.push(value);
 	            }
 	        };
     }).service('filterService', function() {

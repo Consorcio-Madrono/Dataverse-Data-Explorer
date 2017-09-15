@@ -24,8 +24,10 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$scope.sectionModel = {}
 	//
 	$scope.citation="";
-	$scope.weights=[];
-	$scope.weight_on=false;
+	
+	$scope.weight_on=true;
+	$scope.has_weights=true;//temp
+	sharedVariableStore.setWeightOn(true);//temp
 	//
 	if($scope.variableClick.params == true) {
 		$scope.active = {matches: true};
@@ -112,7 +114,8 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 				}
 				//check if this is a weight varible
 				if($scope.details.datadscr['var'][i].name.toLowerCase().indexOf("weight")>-1){
-					$scope.weights.push($scope.details.datadscr['var'][i].variable_data);
+					sharedVariableStore.addWeights($scope.details.datadscr['var'][i]);
+					$scope.has_weights=true;
 				}
 				var chartable=false;
 
@@ -541,11 +544,21 @@ $scope.show = {};
         '</div>',
       replace: true
     };
-  }).controller('weightCtrl', function($scope) {
+  }).controller('weightCtrl', function($scope,sharedVariableStore) {
 	$('#weight_but').click(function(e) { 
 			e.preventDefault(); 
 			$scope.weight_on=!$scope.weight_on;
-		})
+			sharedVariableStore.setWeightOn($scope.weight_on);
+		if(sharedVariableStore.getWeights()>1){
+			//TODO if there are more then 1 weight variables all the user to determine which one to add
+			console.log("show prmompt allow user to add their own weights")
+		}
+		console.log(sharedVariableStore.getWeights())
+		for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
+ 				//add the specified slot to the 
+				sharedVariableStore.getVariableStore()[j].weight_id=sharedVariableStore.getWeights()[0].id
+		}	
+	})
   });
 ////////////////////////				
 // Changes XML to JSON		
@@ -608,10 +621,10 @@ function splitInterface(){
 function unsplitInterface(){
 	var content_width=$("#details-content").width()
 	$('#variables_table').css({width: content_width});
-			$('#left-half').finish().animate({width: content_width});
-			$('#right-half').finish().animate({left: content_width}, 700);
-			$('#right-half').hide();
-			angular.element($('#combineModal')).scope().combineHTML="";
-			angular.element($('#combineModal')).scope().showing=false;
+	$('#left-half').finish().animate({width: content_width});
+	$('#right-half').finish().animate({left: content_width}, 700);
+	$('#right-half').hide();
+	angular.element($('#combineModal')).scope().combineHTML="";
+	angular.element($('#combineModal')).scope().showing=false;
 }
 

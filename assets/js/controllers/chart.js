@@ -137,7 +137,7 @@ angular.module('odesiApp').controller('chartCtrl', function($scope, $cookies,sha
 					}
 					//
 					if(!data[i].missing || data[i].catvalu) {
-						//table structure Values,Categories,N
+						//table structure Values,Categories,N - also NW (weighted variable if available)
 						//keep track of the items location
 						table[table_num].n=num
 						//
