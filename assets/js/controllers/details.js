@@ -327,6 +327,7 @@ $scope.viewVariable = function (vl,type) {
 			temp_array.push({"id":id, "type":type});
 		}
 		$scope.updateURLParams(temp_array)
+		
 		return
 	}
 	if(!type){
@@ -352,7 +353,7 @@ $scope.viewVariable = function (vl,type) {
 		delete vl.type;
 	}
 	//update the state
-	
+	console.log("hey")
 	$scope.updateURLParams(temp_array) 
 };
 $scope.my_option = 0;
