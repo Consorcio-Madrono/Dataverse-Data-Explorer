@@ -25,9 +25,9 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	//
 	$scope.citation="";
 	
-	$scope.weight_on=true;
-	$scope.has_weights=true;//temp
-	sharedVariableStore.setWeightOn(true);//temp
+	$scope.weight_on=false;
+	$scope.has_weights=false;//temp
+	
 	//
 	if($scope.variableClick.params == true) {
 		$scope.active = {matches: true};
@@ -68,19 +68,22 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 		}
 
 		sharedVariableStore.setVariableCompare(variables);
-		$scope.selectedVariable=encodeURIComponent(JSON.stringify(variables));
+		$scope.selectedVariable=URLON.stringify(variables);
 		if(getParameterByName("view")=="table"){
 			//show tabular view
 			setTimeout(function(){  $('.nav-tabs a:eq(1)').trigger("click") }, 5);
 		}
   }
-	$scope.updateURLParams = function(selection,view) {
+	$scope.updateURLParams = function(selection,view,weight) {
 	  	if(selection){
-	  		$scope.selectedVariable=encodeURIComponent(JSON.stringify(selection));
+	  		$scope.selectedVariable=URLON.stringify(selection);
 	  		sharedVariableStore.setVariableCompare(selection)
 	  	}
 	  	if(view){
 	  		$scope.view=view
+	  	}
+	  	if(weight){
+	  		detailsURL.weight =weight
 	  	}
 	  	//make sure to retain existing params
 	  	var obj={};
@@ -112,10 +115,13 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					$scope.details.datadscr['var'][i].variable_data=$scope._variableData.variables[$scope.details.datadscr['var'][i].name]
 
 				}
-				//check if this is a weight varible
-				if($scope.details.datadscr['var'][i].name.toLowerCase().indexOf("weight")>-1){
-					sharedVariableStore.addWeights($scope.details.datadscr['var'][i]);
-					$scope.has_weights=true;
+				//check if the last  variable is a weight
+				if(i == $scope.details.datadscr['var'].length-1){
+					var name=$scope.details.datadscr['var'][i].name.toLowerCase()
+					if(name.indexOf("weight")>-1 || name.indexOf("wgt")>-1){
+						sharedVariableStore.addWeights($scope.details.datadscr['var'][i]);
+						$scope.has_weights=true;
+					}
 				}
 				var chartable=false;
 
@@ -438,8 +444,13 @@ $scope.clearField=function(){
 	detailsURL.key=getParameterByName("key");
 	detailsURL.locale=getParameterByName("locale")
 	detailsURL.selected=getParameterByName("selected");
+	detailsURL.weight=getParameterByName("weight");
 	if(detailsURL.selected){
-		detailsURL.selected = JSON.parse(decodeURIComponent(detailsURL.selected));
+		detailsURL.selected = URLON.parse(detailsURL.selected);
+	}
+	if(detailsURL.weight=='on'){
+		$scope.weight_on=true;
+		sharedVariableStore.setWeightOn(true);//temp
 	}
 	$http({
 		url: detailsURL.uri, 
@@ -549,15 +560,23 @@ $scope.show = {};
 			e.preventDefault(); 
 			$scope.weight_on=!$scope.weight_on;
 			sharedVariableStore.setWeightOn($scope.weight_on);
+			var url_val='on'
+			if(!$scope.weight_on){
+				url_val='off'
+			}
+			$scope.updateURLParams(null,null,url_val)
 		if(sharedVariableStore.getWeights()>1){
 			//TODO if there are more then 1 weight variables all the user to determine which one to add
-			console.log("show prmompt allow user to add their own weights")
+			console.log("show prompt allow user to add their own weights")
 		}
-		console.log(sharedVariableStore.getWeights())
 		for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
  				//add the specified slot to the 
 				sharedVariableStore.getVariableStore()[j].weight_id=sharedVariableStore.getWeights()[0].id
 		}	
+		//if there are slected variables - make sure to update the charts/tables
+		if($scope.detailsURL.selected!=""){
+			angular.element($('#combineModal')).scope().run_it();
+		}
 	})
   });
 ////////////////////////				

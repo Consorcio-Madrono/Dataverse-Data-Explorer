@@ -21,7 +21,10 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
    	}); 
 	drawLegend();
 	$scope.$watch ('selectedVariable', function(){
-		
+		$scope.run_it();
+	//----------------------
+	});
+	$scope.run_it = function(){
 		$scope.variableCompare=[];//all the selected variables
 		var temp_array=sharedVariableStore.getVariableCompare();
 		//
@@ -64,8 +67,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 				prepData(data);
 			}
 		});
-	//----------------------
-	});
+	}
 	var prepData = function(data){
 		var old_data=$scope.data
 		if(!old_data){
