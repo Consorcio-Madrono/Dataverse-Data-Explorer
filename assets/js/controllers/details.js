@@ -327,7 +327,7 @@ $scope.viewVariable = function (vl,type) {
 			temp_array.push({"id":id, "type":type});
 		}
 		$scope.updateURLParams(temp_array)
-		
+
 		return
 	}
 	if(!type){
@@ -353,7 +353,6 @@ $scope.viewVariable = function (vl,type) {
 		delete vl.type;
 	}
 	//update the state
-	console.log("hey")
 	$scope.updateURLParams(temp_array) 
 };
 $scope.my_option = 0;
@@ -517,7 +516,7 @@ $scope.show = {};
           });
           pane.selected = true;
           var view = 'chart';
-          if(pane.title.toLowerCase().indexOf("table")>-1){
+          if(pane.label.toLowerCase().indexOf("table")>-1){
 		          view='table';
           }
 		  if(angular.element($('#details-page')).scope().view !=view){
@@ -534,7 +533,7 @@ $scope.show = {};
         '<div class="tabbable">' +
           '<ul class="nav nav-tabs">' +
             '<li ng-repeat="pane in panes" ng-class="{active:pane.selected}">'+
-              '<a href="" ng-click="select(pane)">{{pane.title}}</a>' +
+              '<a href="" ng-click="select(pane)">{{pane.label}}</a>' +
             '</li>' +
           '</ul>' +
           '<div class="tab-content" ng-transclude></div>' +
@@ -547,7 +546,7 @@ $scope.show = {};
       require: '^tabs',
       restrict: 'E',
       transclude: true,
-      scope: { title: '@' },
+      scope: { label: '@' },
       link: function(scope, element, attrs, tabsCtrl) {
         tabsCtrl.addPane(scope);
       },

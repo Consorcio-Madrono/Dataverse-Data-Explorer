@@ -125,7 +125,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 		var data = _data.split(/\r?\n/);
 			//loop over lines
 			for(var i = 0; i < data.length; i++){
-				var vals=data[i].split(/[	]+/);
+				var vals=data[i].split('\t');
 				//create containing objects
 				for(var j=0;j<vals.length;j++){
 					if(i==0){
@@ -227,7 +227,7 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			}
 		}
 		if(_obj.type=="col"){
-			//if type col move to begining of the list
+			//if type col move to beginning of the list
 			data.move(changed_pos,0)
 		}else{
 			data.move(changed_pos,data.length-1)
@@ -520,9 +520,9 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			var row_response_total=0;
 			for(var k=0; k<col_var_array.length;k++){
 				var bucket_id=getBucketID(col_var_array[k].concat(full_row_var_array[j]),_data,"catvalu")
+
 				//add the values
 				var bucket_val=getBucketValue(bucket_id)
-				
 				var bucket_per=0;
 				if(bucket_val){
 					bucket_per=Math.round(bucket_val/_tot_responses*100*10)/10
