@@ -274,7 +274,7 @@ var fr = {
 		advanced_analysis:'Analyse avancée',
 		chart_view:'Vue Graphique',
 		table_view:'Vue sur la table',
-		weight:'pondération'
+		weight:'Pondération'
 	},
     contact : {
         head : 'Contactez-nous',

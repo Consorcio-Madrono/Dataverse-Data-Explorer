@@ -88,6 +88,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	  	//make sure to retain existing params
 	  	var obj={};
 		for(var i in detailsURL){
+			if(["uri","key","locale"].indexOf(i)==-1)
 			obj[i]=detailsURL[i];
 		}
 		obj.selected=$scope.selectedVariable;
@@ -116,13 +117,13 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 
 				}
 				//check if the last  variable is a weight
-				if(i == $scope.details.datadscr['var'].length-1){
+				/*if(i == $scope.details.datadscr['var'].length-1){
 					var name=$scope.details.datadscr['var'][i].name.toLowerCase()
 					if(name.indexOf("weight")>-1 || name.indexOf("wgt")>-1){
 						sharedVariableStore.addWeights($scope.details.datadscr['var'][i]);
 						$scope.has_weights=true;
 					}
-				}
+				}*/
 				var chartable=false;
 
 				if(typeof($scope.details.datadscr['var'][i].variable_data)!="undefined" && typeof($scope.details.datadscr['var'][i].variable_data.plotvalues)!="undefined" && typeof($scope.details.datadscr['var'][i].catgry)=="undefined"){
@@ -466,7 +467,8 @@ $scope.clearField=function(){
 	var file_id=detailsURL.uri.match("datafile\/(.*)\/metadata")[1];
 	var base_url=detailsURL.uri.substr(0,detailsURL.uri.indexOf("datafile/")+9);
 	//create a url for loading the data
-	var tab_data_url=base_url.substring(0,base_url.indexOf("/api/"))+"/ReadFile?url="+base_url+file_id+"&key="+detailsURL.key+"&variables=";
+	//var tab_data_url=base_url.substring(0,base_url.indexOf("/api/"))+"/ReadFile?url="+base_url+file_id+"&key="+detailsURL.key+"&variables=";
+	var tab_data_url=base_url+file_id+"?variables=";
 	sharedVariableStore.setVariableStoreURL(tab_data_url);
 	//
 	$http({
