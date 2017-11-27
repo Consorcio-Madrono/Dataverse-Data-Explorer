@@ -1457,6 +1457,12 @@ table {
 th {
   text-align: left;
 }
+
+.table-hover > tbody > tr.disabled {
+  cursor: default;
+ color: #317ab987;
+}
+
 .table {
   width: 100%;
   margin-bottom: 20px;

@@ -40,7 +40,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="vl in filtered = (_variables | filter:filterResults) | startFrom:currentTablePage[_file_num]*tablePageSize | limitTo:tablePageSize " ng-class="{active:(vl.selected)}" ng-click="viewVariable(vl)">
+				<tr ng-repeat="vl in filtered = (_variables | filter:filterResults) | startFrom:currentTablePage[_file_num]*tablePageSize | limitTo:tablePageSize " ng-class="{active:(vl.selected),disabled: !vl.chartable}" ng-click="!vl.chartable||viewVariable(vl)">
 					<td width="7%">
 						<table width="100%">
 						<tr>

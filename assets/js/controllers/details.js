@@ -75,9 +75,16 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 		}
   }
 	$scope.updateURLParams = function(selection,view,weight) {
+		//toggle subset download
+		if(selection && selection.length>0){
+	  		$scope.has_no_selection=false;
+	  	}else{
+	  		$scope.has_no_selection=true;
+	  	}
+	  	//
 	  	if(selection){
 	  		$scope.selectedVariable=URLON.stringify(selection);
-	  		sharedVariableStore.setVariableCompare(selection)
+	  		sharedVariableStore.setVariableCompare(selection);
 	  	}
 	  	if(view){
 	  		$scope.view=view
@@ -127,7 +134,6 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 				var chartable=false;
 
 				if(typeof($scope.details.datadscr['var'][i].variable_data)!="undefined" && typeof($scope.details.datadscr['var'][i].variable_data.plotvalues)!="undefined" && typeof($scope.details.datadscr['var'][i].catgry)=="undefined"){
-					chartable=true
 					//artificially create data obj - we likely have value and freq
 					var temp_data=[]
 					for (var j in $scope.details.datadscr['var'][i].variable_data.plotvalues){
@@ -144,7 +150,9 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					}else if($scope.details.datadscr['var'][i].labl) {
 						labl= $scope.details.datadscr['var'][i].labl				
 					} 
-					
+					if(typeof($scope.details.datadscr['var'][i].catgry)!="undefined"){
+						chartable=true
+					}
 					$scope.details.datadscr['var'][i].labl=labl;
 					$scope.surveyVariables.push({
 						id : parseFloat($scope.details.datadscr['var'][i].id.substring(1)),
