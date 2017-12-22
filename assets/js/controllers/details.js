@@ -1,5 +1,5 @@
 'use strict';
-angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $http, $modal, $location, searchParams,filterService, variableQuery,variableClick,sharedVariableStore){	
+angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $http, $modal, $location, searchParams,filterService, variableQuery,variableClick,sharedVariableStore){
 	$scope.showPaging =true;
 	$scope.chartTemplatePath = 'templates/chart.html';
 	var detailsURL = $location.search();//get the url params
@@ -8,26 +8,26 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	$scope.tablePageSize = 10;
 	$scope.loadingDetails = true;
 	$scope.showVariables = true;//original default was false
-	$scope.active = {abstract: true}; 
+	$scope.active = {abstract: true};
 	$scope._variables;
 	$scope.variableClick = variableClick
 	$scope.variableQuery = variableQuery;
 	$scope.selectedVariable;
 	$scope.view="chart";
-	$scope.searchParams = searchParams;	
+	$scope.searchParams = searchParams;
 	$scope._variableData;
 	$scope._filtered_num=0;
-	$scope.sortReverse=true; 
+	$scope.sortReverse=true;
 	$scope.has_no_selection=true;
-	$scope.sortReverse=true; 
+	$scope.sortReverse=true;
 	//
 	$scope.sectionModel = {}
 	//
 	$scope.citation="";
-	
+
 	$scope.weight_on=false;
 	$scope.has_weights=false;//temp
-	
+
 	//
 	if($scope.variableClick.params == true) {
 		$scope.active = {matches: true};
@@ -46,7 +46,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					sharedVariableStore.getVariableStore()[j].type="";
 					break;
 				}
-			}		
+			}
 		}
 	  sharedVariableStore.setVariableCompare([])
 	  $scope.updateURLParams([]);
@@ -64,7 +64,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					sharedVariableStore.getVariableStore()[j].type=variables[i].type
 					break;
 				}
-			}		
+			}
 		}
 
 		sharedVariableStore.setVariableCompare(variables);
@@ -95,7 +95,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 	  	//make sure to retain existing params
 	  	var obj={};
 		for(var i in detailsURL){
-			if(["uri","key","locale"].indexOf(i)==-1)
+			if(["uri","fileId","siteUrl","key","locale"].indexOf(i)==-1)
 			obj[i]=detailsURL[i];
 		}
 		obj.selected=$scope.selectedVariable;
@@ -114,12 +114,12 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 			for (var i = 0; i < $scope.details.datadscr['var'].length; i++){
 				counter++
 
-				
+
 				//join the variable data
 				$scope.details.datadscr['var'][i].variable_data=$scope._variableData[$scope.details.datadscr['var'][i].name]
 				//
 				if(!$scope.details.datadscr['var'][i].variable_data && typeof($scope._variableData.variables)!="undefined"){
-					//it might be nested in "variables" 
+					//it might be nested in "variables"
 					$scope.details.datadscr['var'][i].variable_data=$scope._variableData.variables[$scope.details.datadscr['var'][i].name]
 
 				}
@@ -142,14 +142,14 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					//update the catgry for reuse
 					$scope.details.datadscr['var'][i].catgry=temp_data;
 				}
-					
+
 					//exception for dataverse
 					var labl=""
 					if ($scope.details.datadscr['var'][i].labl && $scope.details.datadscr['var'][i].labl["#text"]) {
-						labl= $scope.details.datadscr['var'][i].labl["#text"]				
+						labl= $scope.details.datadscr['var'][i].labl["#text"]
 					}else if($scope.details.datadscr['var'][i].labl) {
-						labl= $scope.details.datadscr['var'][i].labl				
-					} 
+						labl= $scope.details.datadscr['var'][i].labl
+					}
 					if(typeof($scope.details.datadscr['var'][i].catgry)!="undefined"){
 						chartable=true
 					}
@@ -159,14 +159,14 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 						vid : $scope.details.datadscr['var'][i].id,
 						label : labl,
 						chartable : chartable,
-						name : $scope.details.datadscr['var'][i].name,							
+						name : $scope.details.datadscr['var'][i].name,
 						fullData : $scope.details.datadscr['var'][i]
-					});				
+					});
 					//If a location element exists - need to catagorize the questions by files
 					if(typeof($scope.details.datadscr['var'][i].location)!="undefined" && $scope.details.datadscr['var'][i].location.fileid){
-						//get the file description 
+						//get the file description
 						var file_id=$scope.details.datadscr['var'][i].location.fileid;
-						
+
 						var uri,file_note;
 						//create an object array for the files (if it doesn't alreay exist)
 						if(typeof($scope.survey_files)=="undefined"){
@@ -210,7 +210,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 						var var_obj=$scope.surveyVariables[$scope.surveyVariables.length-1]
 						//console.log($scope.surveyVariables.length,var_obj)
 						$scope.survey_files[file_array_pos][2].push(var_obj);
-						//keep a reference to the parent 
+						//keep a reference to the parent
 						var_obj.file_obj=$scope.survey_files[$scope.survey_files.length-1]
 						//
 						if(typeof($scope.filterBy)!="undefined"){
@@ -243,7 +243,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 						for(j in $scope.surveyVariables[index].fullData.variable_data){
 							$scope.surveyVariables[index][j]=$scope.surveyVariables[index].fullData.variable_data[j]
 						}
-					 	
+
 					}
 					//since DLIMF does not have a sumstat - check if it exists first before looping
 					if(typeof($scope.details.datadscr['var'][i].sumstat) !="undefined"){
@@ -261,9 +261,9 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 								}
 							}
 						}
-						
+
 					}else{
-						
+
 						if(typeof($scope.details.datadscr['var'][i].valrng) !="undefined") {
 							var obj=$scope.details.datadscr['var'][i].valrng[0].range[0];
 							$scope.surveyVariables[index].min = Math.round(obj.min);
@@ -274,7 +274,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 			}
 		}
 		$scope.numberOfTablePages = function(_vars){
-			return Math.ceil(_vars/$scope.tablePageSize);                
+			return Math.ceil(_vars/$scope.tablePageSize);
 		}
 		//Allow filtering search results
 		$scope.updateFilter = function(value){
@@ -284,7 +284,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 		$scope.filterResults = function(vl) {
 			return vl.label.toLowerCase().indexOf(filterService.getFilter().toLowerCase()) !== -1 || vl.name.toLowerCase().indexOf(filterService.getFilter().toLowerCase()) !== -1 || vl.vid.toLowerCase().indexOf(filterService.getFilter().toLowerCase()) !== -1
 		};
-		
+
 		//if only one file - treat it as if there were none by removing file reference
 		if(typeof($scope.survey_files)!="undefined" && $scope.survey_files.length==1){
 			$scope.survey_files=null;
@@ -351,18 +351,18 @@ $scope.viewVariable = function (vl,type) {
 		temp_array.splice( temp_array.findIndex(x => x.id==id),1)
 	}else{
 		temp_array.unshift({"id":id, "type":type});
-		
+
 	}
-	//toggle the selection	
+	//toggle the selection
 	vl.selected=!vl.selected;
-	
+
 	if(vl.selected){
 		vl.type=type;//store the type for Table View (either row or column)
 	}else{
 		delete vl.type;
 	}
 	//update the state
-	$scope.updateURLParams(temp_array) 
+	$scope.updateURLParams(temp_array)
 };
 $scope.my_option = 0;
 $scope.downloadData = function (my_option) {
@@ -375,7 +375,7 @@ $scope.downloadData = function (my_option) {
 			temp_array2.push(temp_array[i].id);
 		};
 		url=base_url+file_id+"?key="+detailsURL.key+"&variables="+temp_array2.join(",");
-		break;	
+		break;
 	case 1:
 		url+="?format=original"
 		break;
@@ -390,7 +390,7 @@ $scope.downloadData = function (my_option) {
 		//need to prep the url a bit - should look like //https://sand9.scholarsportal.info/api/meta/datafile/15
 		var base_url_api=base_url.substring(0,base_url.indexOf("/api/"));
 		url=base_url_api+"/api/meta/datafile/"+file_id+"?"
-		break;	
+		break;
 	default:
 		return
 	}
@@ -417,16 +417,16 @@ $scope.clearField=function(){
 }
 
 
-	// this traverses $scope.details object. 
+	// this traverses $scope.details object.
 	var traverse = function(o,func) {
 		for (var i in o) {
-			func.apply(this,[i,o[i]]);  
+			func.apply(this,[i,o[i]]);
 			if (o[i] !== null && typeof(o[i])=="object") {
 				//going on step down in the object tree!!
 				traverse(o[i],func);
 			}
 		}
-	}    
+	}
 	var createCitation = function(citation,agency,id){
 		var link;
 		if(agency=="hdl"){
@@ -438,7 +438,7 @@ $scope.clearField=function(){
 		//inject the url into the citation
 		var re = new RegExp(agency+"([^,]+)", "g")
 		var match = re.exec(citation);
-		
+
 		citation=citation.replace(match[0], "<a href='"+link+"' target='_new'>"+match[0]+"</a>");
 		$("#citation").html(citation);
 	}
@@ -450,10 +450,33 @@ $scope.clearField=function(){
 	*/
 	//////////////////////
 	detailsURL.uri=getParameterByName("uri");
+    detailsURL.siteUrl=getParameterByName("siteUrl");
+    detailsURL.fileId=getParameterByName("fileId");
 	detailsURL.key=getParameterByName("key");
 	detailsURL.locale=getParameterByName("locale")
 	detailsURL.selected=getParameterByName("selected");
 	detailsURL.weight=getParameterByName("weight");
+	//
+    var file_id = "";
+    var base_url = null;
+    if (detailsURL.uri) {
+    	console.log(detailsURL.uri+"what")
+        file_id = detailsURL.uri.match("datafile\/(.*)\/metadata")[1];
+        base_url = detailsURL.uri.substr(0, detailsURL.uri.indexOf("datafile/") + 9);
+    }
+    //the fileId and siteUrl may be provided
+    if(detailsURL.fileId){
+        file_id=detailsURL.fileId;
+    }
+    if(!detailsURL.siteUrl && !detailsURL.uri){
+        detailsURL.siteUrl = window.location.hostname;
+    }
+    if(detailsURL.siteUrl){
+        base_url=detailsURL.siteUrl+"/api/access/datafile/";
+        detailsURL.uri=base_url+file_id+"/metadata/ddi";
+    }
+
+	//
 	if(detailsURL.selected){
 		detailsURL.selected = URLON.parse(detailsURL.selected);
 	}
@@ -472,8 +495,7 @@ $scope.clearField=function(){
 	});
 	
 
-	var file_id=detailsURL.uri.match("datafile\/(.*)\/metadata")[1];
-	var base_url=detailsURL.uri.substr(0,detailsURL.uri.indexOf("datafile/")+9);
+
 	//create a url for loading the data
 	//var tab_data_url=base_url.substring(0,base_url.indexOf("/api/"))+"/ReadFile?url="+base_url+file_id+"&key="+detailsURL.key+"&variables=";
 	var tab_data_url=base_url+file_id+"?variables=";
