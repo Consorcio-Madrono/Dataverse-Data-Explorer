@@ -460,7 +460,7 @@ $scope.clearField=function(){
     var file_id = "";
     var base_url = null;
     if (detailsURL.uri) {
-    	console.log(detailsURL.uri+"what")
+    	//In the future the uri will not be needed but remains to support existing implementations
         file_id = detailsURL.uri.match("datafile\/(.*)\/metadata")[1];
         base_url = detailsURL.uri.substr(0, detailsURL.uri.indexOf("datafile/") + 9);
     }
