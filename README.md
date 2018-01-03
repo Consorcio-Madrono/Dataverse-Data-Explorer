@@ -8,3 +8,5 @@ Additional url paramerets are *locale*, for changing the language (either "fr" o
 And *key*, for accessing restricted content accessible to your account.
 
 This project has been adapted from [ODESI](odesi.ca) 
+
+Issues are currently being tracked [here] (https://docs.google.com/spreadsheets/d/1U-ACbLw3ORtbM8kBzgmZR_CjLJ_bFWwaPX9-LL9Mm98/edit#gid=0) for those without github accounts.
