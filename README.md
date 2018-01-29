@@ -1,15 +1,15 @@
 # Dataverse-Data-Explorer
 The Data Explorer provides a graphical user interface (GUI) which lists the variables in a tabular data file and allows users to search, chart and conduct cross tabulation analysis.
 
-This stand-alone component is built to complement [The Dataverse Project](http://dataverse.org/).
-It can be run locally on a webserver with the DDI metadata from an open Dataverse data file.
-The needed parameters are the *siteUrl* and *fileId*.  
+This stand-alone component is built to complement [The Dataverse Project](http://dataverse.org/) by integrating as part of the interface revealing an **Explore** button for tabular data files upon installation.
 
-As an example, viewing the metadata for https://dataverse.scholarsportal.info/api/access/datafile/8988/metadata/ddi
-can be done by taking the *siteUrl* (https://dataverse.scholarsportal.info) and  *fileId* (8988) to create the following URL: [https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988](https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988)
+Here's a demo of the tool in action [https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988](https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988)
 
 ### Installation
-Instructions for easy implementation as part of your Dataverse instance are coming soon.
+To use the Data Explorer as part of your Dataverse installation simply download the config file [https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json](https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json) to your local computer and then call the following curl command
+``curl -X POST -H 'Content-type: application/json' --upload-file dataExplorer.json http://localhost:8080/api/admin/externalTools``
+
+See [http://guides.dataverse.org/en/4.8.5/installation/external-tools.html] (http://guides.dataverse.org/en/4.8.5/installation/external-tools.html) for further information.
 
 ### Main Interface
 The main interface displays the first 10 variables from the data file. 
