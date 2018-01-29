@@ -150,9 +150,10 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					}else if($scope.details.datadscr['var'][i].labl) {
 						labl= $scope.details.datadscr['var'][i].labl
 					}
-					if(typeof($scope.details.datadscr['var'][i].catgry)!="undefined"){
+					// Todo need strong determinate for chartability
+					//if(typeof($scope.details.datadscr['var'][i].catgry)!="undefined"){
 						chartable=true
-					}
+					//}
 					$scope.details.datadscr['var'][i].labl=labl;
 					$scope.surveyVariables.push({
 						id : parseFloat($scope.details.datadscr['var'][i].id.substring(1)),
