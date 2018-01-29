@@ -35,7 +35,7 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 		$scope.active = {abstract: true};
 	};
 	//
-	$(".nav-tabs").append("<span id='deselect_x' class='sortHandle glyphicon glyphicon-remove' style='cursor:pointer;'></span>");
+	$(".nav-tabs").append("<span id='deselect_x' aria-label='"+angular.element($('#main')).scope().lang.detailsPage.close+"' class='sortHandle glyphicon glyphicon-remove' style='cursor:pointer;'></span>");
 	$( "#deselect_x" ).click(function() {
 	  var temp_array=sharedVariableStore.getVariableCompare();
 	 	 for (var i = 0; i < temp_array.length; i++){
@@ -150,9 +150,10 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 					}else if($scope.details.datadscr['var'][i].labl) {
 						labl= $scope.details.datadscr['var'][i].labl
 					}
-					if(typeof($scope.details.datadscr['var'][i].catgry)!="undefined"){
+					// Todo need strong determinate for chartability
+					//if(typeof($scope.details.datadscr['var'][i].catgry)!="undefined"){
 						chartable=true
-					}
+					//}
 					$scope.details.datadscr['var'][i].labl=labl;
 					$scope.surveyVariables.push({
 						id : parseFloat($scope.details.datadscr['var'][i].id.substring(1)),
@@ -315,8 +316,13 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
 			$scope.currentTablePage[i]=0;
 		}
 	}
+    $scope.viewVariableKeyPress = function(e,vl) {
+        if ((e && e.keyCode === 13) || typeof e === 'undefined') {
+            $scope.viewVariable(vl);
+        }
+    };
 $scope.viewVariable = function (vl,type) {
-	//assign default display catagories
+	//assign default display categories
 	var id=vl.vid;
 	//---
 	var temp_array=sharedVariableStore.getVariableCompare();
