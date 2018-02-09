@@ -1,7 +1,7 @@
 # Dataverse-Data-Explorer
-The Data Explorer provides a graphical user interface (GUI) which lists the variables in a tabular data file and allows users to search, chart and conduct cross tabulation analysis.
+The Data Explorer provides a graphical user interface (GUI) which lists the variables in a tabular data file and allows users to search, chart, and conduct cross tabulation analysis.
 
-This stand-alone component is built to complement [The Dataverse Project](http://dataverse.org/) by integrating as part of the interface revealing an **Explore** button for tabular data files upon installation.
+This stand-alone component is built to complement [The Dataverse Project](http://dataverse.org/). Data Explorer is integrated as part of the main interface, revealing an **Explore** button for tabular data files upon installation.
 
 Here's a demo of the tool in action [https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988](https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988)
 
@@ -22,6 +22,8 @@ Clicking on another variable will update the "Chart View" tab with the newly sel
 Clicking on a selected variable will deselect it and clicking the "X" to the right of the tabs deselects all the selected variables.
 Summary statistics are also provided in the "Chart View" tab below the chart.
 
+![alt text](https://user-images.githubusercontent.com/34171553/36049600-5c543cc4-0db1-11e8-8c1e-e2a2ccfe74d4.PNG)
+
 ## Table View
 Next to the "Chart View" tab (revealed when a variable is selected), is the "Table View" tab. 
 Clicking the "Table View" tab will display a cross tabulation of the selected variables.
@@ -29,6 +31,8 @@ By default selected variables are shown along a row in the cross tabulation.
 Variables can be switched to columns in two ways: 1) you can drag the four-way arrow icon to the empty column on the left of the cross tabulation table and release when the column darkens, or 2) you can click the "Add as Column" icon (beneath the "Add as Row" icon) on the left of the desired variable row.
 With no variable selected, clicking either of these icons will display the "Table View" tab directly.
 Below the table, z-scores provide a measure of the number of standard deviations above or below the population mean.
+
+![alt text](https://user-images.githubusercontent.com/34171553/36048745-4d287d30-0dae-11e8-843d-c1f55eabace6.PNG)
 
 ## Downloading Data
 The "Download" dropdown can be found near the top of the interface. The first option "Download Subset" becomes enabled when one or more variables are selected.
