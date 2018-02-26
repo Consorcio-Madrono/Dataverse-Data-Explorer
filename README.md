@@ -1,7 +1,7 @@
 # Dataverse-Data-Explorer
 The Data Explorer provides a graphical user interface (GUI) which lists the variables in a tabular data file and allows users to search, chart, and conduct cross tabulation analysis.
 
-This stand-alone component is built to complement [The Dataverse Project](http://dataverse.org/). Data Explorer is integrated as part of the main interface, revealing an **Explore** button for tabular data files upon installation.
+This stand-alone component is built to complement [The Dataverse Project](http://dataverse.org/). The Data Explorer is integrated as part of the dataset.xhtml and file.xhtml pages, revealing an **Explore** button for tabular data files upon installation.
 
 Here's a demo of the tool in action [https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988](https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988)
 
