@@ -9,7 +9,7 @@ Here's a demo of the tool in action [https://scholarsportal.github.io/Dataverse-
 To use the Data Explorer as part of your Dataverse installation simply download the config file [https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json](https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json) to your local computer and then call the following curl command
 ``curl -X POST -H 'Content-type: application/json' --upload-file dataExplorer.json http://localhost:8080/api/admin/externalTools``
 
-See [http://guides.dataverse.org/en/4.8.5/installation/external-tools.html] (http://guides.dataverse.org/en/4.8.5/installation/external-tools.html) for further information.
+See [http://guides.dataverse.org/en/4.8.5/installation/external-tools.html](http://guides.dataverse.org/en/4.8.5/installation/external-tools.html) for further information.
 
 ### Main Interface
 The main interface displays the first 10 variables from the data file. 
@@ -33,6 +33,9 @@ With no variable selected, clicking either of these icons will display the "Tabl
 Below the table, z-scores provide a measure of the number of standard deviations above or below the population mean.
 
 ![alt text](https://user-images.githubusercontent.com/34171553/36048745-4d287d30-0dae-11e8-843d-c1f55eabace6.PNG)
+
+### Z-score
+For convenience the z-score (also know as the standard score) of each value in the table view has been visualized to 2 standard deviations. The z-score is calculated by taking the value (x) minus the mean (µ) which is then divided by the standard deviation (σ). The z-score of each value is then divided by 2 and coloured using the resultant value.
 
 ## Downloading Data
 The "Download" dropdown can be found near the top of the interface. The first option "Download Subset" becomes enabled when one or more variables are selected.
