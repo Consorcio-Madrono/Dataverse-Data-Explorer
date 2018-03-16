@@ -55,7 +55,10 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
   var selectVariables = function(variables){
   	if(!variables){
   		return;
-  	}
+  	}else if(variables.length>0){
+        //allow subset download
+        $scope.has_no_selection = false;
+	}
 	for (var i = 0; i < variables.length; i++){
  			for(var j=0;j<sharedVariableStore.getVariableStore().length;j++){
  				if(sharedVariableStore.getVariableStore()[j].vid==variables[i].id){
@@ -76,11 +79,13 @@ angular.module('odesiApp').controller('detailsCtrl', function($scope,$cookies, $
   }
 	$scope.updateURLParams = function(selection,view,weight) {
 		//toggle subset download
-		if(selection && selection.length>0){
-	  		$scope.has_no_selection=false;
-	  	}else{
-	  		$scope.has_no_selection=true;
-	  	}
+            if (selection && selection.length > 0 ) {
+                $scope.has_no_selection = false;
+            }else if(view){
+				//the view has changed do not alter the subset download
+			} else {
+                $scope.has_no_selection = true;
+            }
 	  	//
 	  	if(selection){
 	  		$scope.selectedVariable=URLON.stringify(selection);
@@ -386,8 +391,8 @@ $scope.downloadData = function (my_option) {
 		url+="?format=original"
 		break;
 	case 2:
-	       //add nothing to download the tab file
-		    url+="?"
+	    //add nothing to download the tab file
+		url+="?"
 		break;
 	case 3:
 		url+="?format=RData"
@@ -403,7 +408,7 @@ $scope.downloadData = function (my_option) {
 	//add the key
 	url+="&key="+detailsURL.key
 	window.location.assign(url);
-	$('#download').val(-1);
+    $scope.reset();
 };
 $scope.goToTwoRavens =function (){
 	var base_url_api=base_url.substring(0,base_url.indexOf("/api/"));
@@ -413,6 +418,9 @@ $scope.goToTwoRavens =function (){
 }
 $scope.reset = function() {
 	$('#download').val( 0 );
+    setTimeout(function(){ $scope.$apply();
+        $('#download').trigger('change');
+    });
 };
 $scope.selectFilter=function(){
 	$(".search_field").select()
