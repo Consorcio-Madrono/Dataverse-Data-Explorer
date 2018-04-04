@@ -5,14 +5,14 @@
   "toolParameters": {
     "queryParameters": [
       {	
--        "fileId": "{fileId}"	
--      },	
--      {	
--        "siteUrl": "{siteUrl}"	
--      },	
--      {	
--        "key": "{apiToken}"	
--      }
+        "fileId": "{fileId}"	
+     },	
+     {	
+       "siteUrl": "{siteUrl}"	
+      },	
+      {	
+       "key": "{apiToken}"	
+      }
     ]
   }
 }
