@@ -9,6 +9,9 @@ Here's a demo of the tool in action [https://scholarsportal.github.io/Dataverse-
 To use the Data Explorer as part of your Dataverse installation simply download the config file [https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json](https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json) to your local computer and then call the following curl command
 ``curl -X POST -H 'Content-type: application/json' --upload-file dataExplorer.json http://localhost:8080/api/admin/externalTools``
 
+The config file [https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorerLocal.json](https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorerLocal.json) can be used for local installations assuming the Data Explorer application is placed in the Dataverse project directory {Dataverse Dir}/src/main/webapp/ddi_explore 
+
+
 See [http://guides.dataverse.org/en/4.8.6/installation/external-tools.html](http://guides.dataverse.org/en/4.8.6/installation/external-tools.html) for further information.
 
 ### Main Interface
