@@ -12,7 +12,9 @@ To use the Data Explorer as part of your Dataverse installation simply download 
 The config file [https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorerLocal.json](https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorerLocal.json) can be used for local installations assuming the Data Explorer application is placed in the Dataverse project directory {Dataverse Dir}/src/main/webapp/ddi_explore 
 
 
-See [http://guides.dataverse.org/en/4.8.6/installation/external-tools.html](http://guides.dataverse.org/en/4.8.6/installation/external-tools.html) for further information.
+See [http://guides.dataverse.org/en/4.8.6/installation/external-tools.html](http://guides.dataverse.org/en/4.8.6/installation/external-tools.html) for further information on external tools.
+
+Note that your Dataverse installation needs to be properly configured to produce .prep metadata, with all the required R components installed. Consult the [Dataverse Installation Guide](http://guides.dataverse.org/en/latest/installation/index.html) for details.
 
 ### Main Interface
 The main interface displays the first 10 variables from the data file. 
