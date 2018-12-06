@@ -31,7 +31,7 @@ var en = {
 		"nw":"NW",
 		"orig_file_format":"Download original file",
 		"prequestion":"Prequestion Text",
-		"rdata_format":"Download RDA format file",
+		"rdata_format":"Download RData format file",
 		"records":"Records Per Page",
 		"results":"Results",
 		"summarystats":"Summary Statistics",
