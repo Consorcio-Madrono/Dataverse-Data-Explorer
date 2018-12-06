@@ -31,7 +31,7 @@ var fr = {
 		"nw":"NP",
 		"orig_file_format":"Fichier au format d'origine",
 		"prequestion":"Texte précédant la question",
-		"rdata_format":"Fichier au format RDA",
+		"rdata_format":"Fichier au format RData",
 		"records":"Enregistrements par page",
 		"results":"Résultats",
 		"summarystats":"Statistiques sommaires",
