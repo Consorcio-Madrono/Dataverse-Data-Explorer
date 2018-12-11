@@ -13,6 +13,9 @@
      },	
      {	
        "key": "{apiToken}"	
+     },
+     {
+       "dvLocale": "{localeCode}"
      }
     ]
   }

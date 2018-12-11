@@ -1,19 +1,23 @@
 'use strict';
 angular.module('odesiApp').controller('mainCtrl', function($scope, $http, $route, $location, $cookies, $timeout, $anchorScroll, anchorSmoothScroll, getEntitlement){
 		//main controller
-		//determine language based on session cookie
 
+		//browser tab's first visit from dataverse
+		var dvLocale = getParameterByName("dvLocale");
 
-
-		var lang = getParameterByName("locale")
-		if(lang == 'fr' && !$cookies.language) {
-			$cookies.language = 'fr';
-			location.reload();
-
+		//fallback to browser lang setting
+		if (dvLocale === '' && navigator.language != '') {
+			dvLocale = navigator.language.substr(0,2);
 		}
 
-		$scope.lang = (!$cookies.language || $cookies.language === 'en') ? en : fr;
-		$scope.htmllang = $cookies.language;
+		var initLocale = window.sessionStorage.getItem("initLocale");
+		if (!initLocale) {
+			window.sessionStorage.setItem('initLocale', dvLocale);
+			window.sessionStorage.setItem('language', dvLocale);
+		}
+
+		var sessionLang = window.sessionStorage.getItem("language");
+		$scope.lang = (!sessionLang || sessionLang === 'en') ? en : fr;
 		$scope.baseUrl = $location.host() + ":" + $location.port();
 		//paths for templates
 		$scope.headerTemplatePath = 'templates/header.html';
@@ -29,7 +33,7 @@ angular.module('odesiApp').controller('mainCtrl', function($scope, $http, $route
 		$scope.myList = window.sessionStorage.getItem('myList') ? URLON.parse(window.sessionStorage.getItem('myList')) : [];
 		//function that handles language toggle
 		$scope.switchLanguage = function(language){
-			$cookies.language = language;
+            window.sessionStorage.setItem('language', language);
 			location.reload();
 		}
 
