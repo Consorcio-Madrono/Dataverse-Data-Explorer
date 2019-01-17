@@ -2,18 +2,20 @@
 angular.module('odesiApp').controller('mainCtrl', function($scope, $http, $route, $location, $cookies, $timeout, $anchorScroll, anchorSmoothScroll, getEntitlement){
 		//main controller
 
-		//browser tab's first visit from dataverse
+		//browser-tab's first visit from dataverse
 		var dvLocale = getParameterByName("dvLocale");
 
 		//fallback to browser lang setting
-		if (dvLocale === '' && navigator.language != '') {
-			dvLocale = navigator.language.substr(0,2);
+		if ((!dvLocale || dvLocale === '') && navigator.language != '') {
+                    dvLocale = navigator.language.substr(0,2);
 		}
 
 		var initLocale = window.sessionStorage.getItem("initLocale");
+
+		//first visit
 		if (!initLocale) {
-			window.sessionStorage.setItem('initLocale', dvLocale);
-			window.sessionStorage.setItem('language', dvLocale);
+                    window.sessionStorage.setItem('initLocale', dvLocale);
+                    window.sessionStorage.setItem('language', dvLocale);
 		}
 
 		var sessionLang = window.sessionStorage.getItem("language");
