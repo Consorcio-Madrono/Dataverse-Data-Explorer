@@ -48,4 +48,4 @@ All other options remain enabled regardless of selection.
 
 
 ### Reference
-This project has been adapted from the Ontario Data Documentation, Extraction Service and Infrastructure known as [ODESI](odesi.ca)
+This project has been adapted from the Ontario Data Documentation, Extraction Service and Infrastructure known as [ODESI](https://odesi.ca)
