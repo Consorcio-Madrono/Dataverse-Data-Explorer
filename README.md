@@ -3,7 +3,7 @@ The Data Explorer provides a graphical user interface (GUI) which lists the vari
 
 This stand-alone component is built to complement [The Dataverse Project](http://dataverse.org/). The Data Explorer is integrated as part of the dataset.xhtml and file.xhtml pages, revealing an **Explore** button for tabular data files upon installation.
 
-Here's a demo of the tool in action [https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988](https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988)
+Here's a demo of the tool in action - **this should be used for testing purposes only**:  [https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988](https://scholarsportal.github.io/Dataverse-Data-Explorer/?siteUrl=https://dataverse.scholarsportal.info&fileId=8988)
 
 ### Installation
 To use the Data Explorer as part of your Dataverse installation simply download the config file [https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json](https://scholarsportal.github.io/Dataverse-Data-Explorer/dataExplorer.json) to your local computer and then call the following curl command
@@ -48,4 +48,4 @@ All other options remain enabled regardless of selection.
 
 
 ### Reference
-This project has been adapted from the Ontario Data Documentation, Extraction Service and Infrastructure known as [ODESI](odesi.ca)
+This project has been adapted from the Ontario Data Documentation, Extraction Service and Infrastructure known as [ODESI](https://odesi.ca)
