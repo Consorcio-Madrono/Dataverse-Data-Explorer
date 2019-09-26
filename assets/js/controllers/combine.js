@@ -68,57 +68,59 @@ angular.module('odesiApp').controller('combineCtrl', function($scope, $cookies, 
 			}
 		});
 	}
-	var prepData = function(data){
-		var old_data=$scope.data
-		if(!old_data){
-			old_data=[];
-		}
-		$scope.data=createTabObj(data);
-		$scope.buckets=createBuckets($scope.data);
-		//if there are weights - remove them from the data
-		if(sharedVariableStore.getWeightOn()){
-			$scope.data=$scope.data.slice(0,$scope.data.length-sharedVariableStore.getWeights().length)
-		}
-		$scope.bucket_order=[];
-		for(var i = 0; i < $scope.data.length; i++){
-			$scope.bucket_order.push($scope.data[i].name);
-		}
-		//first remove any unwantend variables which have been unselected
-		for(var i = old_data.length-1; i >= 0; i--){
-			var var_exists=false;
-			for(var j= 0; j < $scope.data.length; j++){
-				if(old_data[i].name==$scope.data[j].name){
-					var_exists=true
-					break;
+		var prepData = function(data){
+		setTimeout(function(){
+			var old_data=$scope.data
+			if(!old_data){
+				old_data=[];
+			}
+			$scope.data=createTabObj(data);
+			$scope.buckets=createBuckets($scope.data);
+			//if there are weights - remove them from the data
+			if(sharedVariableStore.getWeightOn()){
+				$scope.data=$scope.data.slice(0,$scope.data.length-sharedVariableStore.getWeights().length)
+			}
+			$scope.bucket_order=[];
+			for(var i = 0; i < $scope.data.length; i++){
+				$scope.bucket_order.push($scope.data[i].name);
+			}
+			//first remove any unwantend variables which have been unselected
+			for(var i = old_data.length-1; i >= 0; i--){
+				var var_exists=false;
+				for(var j= 0; j < $scope.data.length; j++){
+					if(old_data[i].name==$scope.data[j].name){
+						var_exists=true
+						break;
+					}
+				}
+				//if variable old not found
+				if(!var_exists){
+					old_data.splice(i,1)
 				}
 			}
-			//if variable old not found
-			if(!var_exists){
-				old_data.splice(i,1)
-			}
-		}
-		//determine if there are any new variables
-		var new_data=[];
-		for(var i = 0; i < $scope.data.length; i++){
-			var var_exists=false;
-			for(var j = 0; j < old_data.length; j++){
-				if($scope.data[i].name==old_data[j].name){
-					var_exists=true
-					break;
+			//determine if there are any new variables
+			var new_data=[];
+			for(var i = 0; i < $scope.data.length; i++){
+				var var_exists=false;
+				for(var j = 0; j < old_data.length; j++){
+					if($scope.data[i].name==old_data[j].name){
+						var_exists=true
+						break;
+					}
+				}
+				//if new variable not found
+				if(!var_exists){
+					new_data.push($scope.data[i])
 				}
 			}
-			//if new variable not found
-			if(!var_exists){
-				new_data.push($scope.data[i])
-			}
-		}
-		
-		getVariableMetadata(new_data);//adds extra variable information
-		//if we already have some data just append the new values and delete any that have been removed
-		$scope.data=old_data.concat(new_data);
-		$scope.data=$scope.groupVariableMetadata();
-		$scope.combineHTML=$scope.getCombinedTable();//triggers watcher update which places html
-		$scope.loadingTabDetails=false
+			
+			getVariableMetadata(new_data);//adds extra variable information
+			//if we already have some data just append the new values and delete any that have been removed
+			$scope.data=old_data.concat(new_data);
+			$scope.data=$scope.groupVariableMetadata();
+			$scope.combineHTML=$scope.getCombinedTable();//triggers watcher update which places html
+			$scope.loadingTabDetails=false
+		}, 1);
 	}
 	var createTabObj = function(_data){
 		var var_obj=[]
